@@ -1,4 +1,4 @@
-package fdk
+package fresh
 
 import (
 	"fmt"

@@ -26,7 +26,7 @@ func testNewFreshdesk(t *testing.T) *Freshdesk {
 	fd := &Freshdesk{
 		Domain:     domain,
 		Apikey:     apikey,
-		Logger:     logs.GetLogger("FDK"),
+		Logger:     logs.GetLogger("Fresh"),
 		MaxRetries: 1,
 		RetryAfter: time.Second * 3,
 	}

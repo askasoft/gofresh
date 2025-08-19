@@ -1,6 +1,7 @@
 package freshdesk
 
 import (
+	"errors"
 	"testing"
 	"time"
 
@@ -85,8 +86,12 @@ func TestGetContacts(t *testing.T) {
 		return
 	}
 
-	c, err := fd.GetContact(ctxbg, 2043042684973)
+	c, err := fd.GetContact(ctxbg, 1)
 	if err != nil {
+		var fre *ResultError
+		if errors.As(err, &fre) {
+			t.Errorf("Status: %v", fre.Status)
+		}
 		t.Fatalf("ERROR: %v", err)
 	}
 

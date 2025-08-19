@@ -7,7 +7,7 @@
 
 GoFresh is a golang client library for Freshdesk/Freshservice API.
 
-| **Package**                              | **Description**                         |
-| :--------------------------------------- | :-------------------------------------- |
-| [fdk/freshdesk](./fdk/freshdesk/)        | a sdk package for freshdesk             |
-| [fdk/freshservice](./fdk/freshservice/)  | a sdk package for freshservice          |
+| **Package**                      | **Description**                         |
+| :------------------------------- | :-------------------------------------- |
+| [freshdesk](./freshdesk/)        | a client package for freshdesk             |
+| [freshservice](./freshservice/)  | a client package for freshservice          |

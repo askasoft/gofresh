@@ -1,4 +1,4 @@
-package fdk
+package fresh
 
 import (
 	"context"
@@ -31,7 +31,7 @@ type ResultError struct {
 	Message     string        `json:"message,omitempty"`
 	Description string        `json:"description,omitempty"`
 	Errors      []*FieldError `json:"errors,omitempty"`
-	RetryAfter  time.Duration
+	RetryAfter  time.Duration `json:"-"`
 }
 
 func newResultError(res *http.Response) *ResultError {

@@ -4,21 +4,23 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/askasoft/gofresh/fdk"
+	"github.com/askasoft/gofresh/fresh"
 	"github.com/askasoft/pango/doc/jsonx"
 )
 
-type Date = fdk.Date
-type Time = fdk.Time
-type TimeSpent = fdk.TimeSpent
-type Attachment = fdk.Attachment
-type Attachments = fdk.Attachments
-type ListOption = fdk.ListOption
-type PageOption = fdk.PageOption
-type File = fdk.File
-type Files = fdk.Files
-type WithFiles = fdk.WithFiles
-type Values = fdk.Values
+type FieldError = fresh.FieldError
+type ResultError = fresh.ResultError
+type Date = fresh.Date
+type Time = fresh.Time
+type TimeSpent = fresh.TimeSpent
+type Attachment = fresh.Attachment
+type Attachments = fresh.Attachments
+type ListOption = fresh.ListOption
+type PageOption = fresh.PageOption
+type File = fresh.File
+type Files = fresh.Files
+type WithFiles = fresh.WithFiles
+type Values = fresh.Values
 
 type OrderType string
 
@@ -46,65 +48,65 @@ func (fo *FilterOption) Values() Values {
 }
 
 func ParseDate(s string) (*Date, error) {
-	return fdk.ParseDate(s)
+	return fresh.ParseDate(s)
 }
 
 func ParseTime(s string) (*Time, error) {
-	return fdk.ParseTime(s)
+	return fresh.ParseTime(s)
 }
 
 func ParseTimeSpent(s string) (TimeSpent, error) {
-	return fdk.ParseTimeSpent(s)
+	return fresh.ParseTimeSpent(s)
 }
 
 func NewAttachment(file string, data ...[]byte) *Attachment {
-	return fdk.NewAttachment(file, data...)
+	return fresh.NewAttachment(file, data...)
 }
 
 func toString(o any) string {
 	return jsonx.Prettify(o)
 }
 
-type Freshservice fdk.FDK
+type Freshservice fresh.Fresh
 
 func (fs *Freshservice) Endpoint(format string, a ...any) string {
-	return (*fdk.FDK)(fs).Endpoint(format, a...)
+	return (*fresh.Fresh)(fs).Endpoint(format, a...)
 }
 
 func (fs *Freshservice) DoGet(ctx context.Context, url string, result any) error {
-	return (*fdk.FDK)(fs).DoGet(ctx, url, result)
+	return (*fresh.Fresh)(fs).DoGet(ctx, url, result)
 }
 
 func (fs *Freshservice) DoList(ctx context.Context, url string, lo ListOption, result any) (bool, error) {
-	return (*fdk.FDK)(fs).DoList(ctx, url, lo, result)
+	return (*fresh.Fresh)(fs).DoList(ctx, url, lo, result)
 }
 
 func (fs *Freshservice) DoPost(ctx context.Context, url string, source, result any) error {
-	return (*fdk.FDK)(fs).DoPost(ctx, url, source, result)
+	return (*fresh.Fresh)(fs).DoPost(ctx, url, source, result)
 }
 
 func (fs *Freshservice) DoPut(ctx context.Context, url string, source, result any) error {
-	return (*fdk.FDK)(fs).DoPut(ctx, url, source, result)
+	return (*fresh.Fresh)(fs).DoPut(ctx, url, source, result)
 }
 
 func (fs *Freshservice) DoDelete(ctx context.Context, url string) error {
-	return (*fdk.FDK)(fs).DoDelete(ctx, url)
+	return (*fresh.Fresh)(fs).DoDelete(ctx, url)
 }
 
 func (fs *Freshservice) Download(ctx context.Context, url string) ([]byte, error) {
-	return (*fdk.FDK)(fs).DoDownload(ctx, url)
+	return (*fresh.Fresh)(fs).DoDownload(ctx, url)
 }
 
 func (fs *Freshservice) SaveFile(ctx context.Context, url string, path string) error {
-	return (*fdk.FDK)(fs).DoSaveFile(ctx, url, path)
+	return (*fresh.Fresh)(fs).DoSaveFile(ctx, url, path)
 }
 
 func (fs *Freshservice) DownloadNoAuth(ctx context.Context, url string) ([]byte, error) {
-	return (*fdk.FDK)(fs).DoDownloadNoAuth(ctx, url)
+	return (*fresh.Fresh)(fs).DoDownloadNoAuth(ctx, url)
 }
 
 func (fs *Freshservice) SaveFileNoAuth(ctx context.Context, url string, path string) error {
-	return (*fdk.FDK)(fs).DoSaveFileNoAuth(ctx, url, path)
+	return (*fresh.Fresh)(fs).DoSaveFileNoAuth(ctx, url, path)
 }
 
 func (fs *Freshservice) DownloadAttachment(ctx context.Context, aid int64) ([]byte, error) {

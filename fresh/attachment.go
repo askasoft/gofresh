@@ -1,4 +1,4 @@
-package fdk
+package fresh
 
 type Attachment struct {
 	ID int64 `json:"id,omitempty"`
