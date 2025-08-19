@@ -12,7 +12,7 @@ type TicketField struct {
 	// Description of the field
 	Description string `json:"description,omitempty"`
 
-	// True if the field is a default field. False if customm
+	// True if the field is a not a custom field.
 	Default bool `json:"default,omitempty"`
 
 	// Position in which the ticket field is displayed in the form
@@ -73,14 +73,11 @@ type TicketFieldCreate struct {
 	// Label of the field for display
 	Label string `json:"label,omitempty"`
 
-	// True if the field is a default field. False if customm
-	Default bool `json:"default,omitempty"`
+	// For custom ticket fields, The type of value associated with the field will be given (Examples custom_date, custom_text...)
+	Type string `json:"type,omitempty"`
 
 	// Position in which the ticket field is displayed in the form
 	Position int `json:"field_type,omitempty"`
-
-	// For custom ticket fields, The type of value associated with the field will be given (Examples custom_date, custom_text...)
-	Type string `json:"type,omitempty"`
 
 	// True if the field is marked mandatory while closing the Release item
 	RequiredForClosure bool `json:"required_for_closure,omitempty"`

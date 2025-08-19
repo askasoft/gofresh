@@ -10,6 +10,8 @@ import (
 // ---------------------------------------------------
 // Requester
 
+const RequesterFieldIncludeUserFieldGroups = "user_field_groups"
+
 type ListRequesterGroupsOption = PageOption
 type ListRequesterGroupMembersOption = PageOption
 

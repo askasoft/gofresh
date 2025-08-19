@@ -25,6 +25,31 @@ type OrderType string
 const (
 	OrderAsc  OrderType = "asc"
 	OrderDesc OrderType = "desc"
+
+	DefaultFieldTypeName        = "default_name"
+	DefaultFieldTypeNote        = "default_note"
+	DefaultFieldTypeSubject     = "default_subject"
+	DefaultFieldTypeAgent       = "default_agent"
+	DefaultFieldTypeRequester   = "default_requester"
+	DefaultFieldTypeGroup       = "default_group"
+	DefaultFieldTypeCompany     = "default_company"
+	DefaultFieldTypeProduct     = "default_product"
+	DefaultFieldTypePriority    = "default_priority"
+	DefaultFieldTypeSource      = "default_source"
+	DefaultFieldTypeStatus      = "default_status"
+	DefaultFieldTypeDescription = "default_description"
+	DefaultFieldTypeTicketType  = "default_ticket_type"
+
+	CustomFieldTypeCustomDate      = "custom_date"
+	CustomFieldTypeCustomDateTime  = "custom_date_time"
+	CustomFieldTypeCustomDropdown  = "custom_dropdown"
+	CustomFieldTypeCustomParagraph = "custom_paragraph"
+	CustomFieldTypeCustomText      = "custom_text"
+	CustomFieldTypeCustomCheckbox  = "custom_checkbox"
+	CustomFieldTypeCustomNumber    = "custom_number"
+	CustomFieldTypeCustomDecimal   = "custom_decimal"
+	CustomFieldTypeCustomFile      = "custom_file"
+	CustomFieldTypeNestedField     = "nested_field"
 )
 
 type FilterOption struct {

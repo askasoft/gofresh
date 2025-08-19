@@ -13,7 +13,7 @@ func TestTicketFieldsAPIs(t *testing.T) {
 	tfc := &TicketFieldCreate{
 		Label:                "testfieldlabel",
 		LabelForCustomers:    "testfieldlabelforcustomers",
-		Type:                 TicketFieldTypeCustomText,
+		Type:                 CustomFieldTypeCustomText,
 		CustomersCanEdit:     true,
 		DisplayedToCustomers: true,
 	}

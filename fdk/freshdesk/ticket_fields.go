@@ -10,28 +10,6 @@ import (
 
 const (
 	TicketFieldIncludeSection = "section"
-
-	TicketFieldTypeDefaultSubject     = "default_subject"
-	TicketFieldTypeDefaultAgent       = "default_agent"
-	TicketFieldTypeDefaultRequester   = "default_requester"
-	TicketFieldTypeDefaultGroup       = "default_group"
-	TicketFieldTypeDefaultCompany     = "default_company"
-	TicketFieldTypeDefaultProduct     = "default_product"
-	TicketFieldTypeDefaultPriority    = "default_priority"
-	TicketFieldTypeDefaultSource      = "default_source"
-	TicketFieldTypeDefaultStatus      = "default_status"
-	TicketFieldTypeDefaultDescription = "default_description"
-	TicketFieldTypeDefaultTicketType  = "default_ticket_type"
-	TicketFieldTypeCustomDate         = "custom_date"
-	TicketFieldTypeCustomDateTime     = "custom_date_time"
-	TicketFieldTypeCustomDropdown     = "custom_dropdown"
-	TicketFieldTypeCustomParagraph    = "custom_paragraph"
-	TicketFieldTypeCustomText         = "custom_text"
-	TicketFieldTypeCustomCheckbox     = "custom_checkbox"
-	TicketFieldTypeCustomNumber       = "custom_number"
-	TicketFieldTypeCustomDecimal      = "custom_decimal"
-	TicketFieldTypeCustomFile         = "custom_file"
-	TicketFieldTypeNestedField        = "nested_field"
 )
 
 // List All Ticket Fields
