@@ -119,7 +119,7 @@ type Article struct {
 	InsertedIntoTickets int `json:"inserted_into_tickets,omitempty"`
 
 	// Date in future when this article would need to be reviewed again.
-	ReviewDate *Time `json:"review_date,omitempty"`
+	ReviewDate *Date `json:"review_date,omitempty"`
 
 	// Approval status of the article.
 	ApprovalStatus ApprovalStatus `json:"approval_status,omitempty"`
@@ -199,7 +199,7 @@ type ArticleCreate struct {
 	Attachments []*Attachment `json:"attachments,omitempty"`
 
 	// Date in future when this article would need to be reviewed again.
-	ReviewDate *Time `json:"review_date,omitempty"`
+	ReviewDate *Date `json:"review_date,omitempty"`
 
 	// Unique ID of the primary language article
 	ParentID int64 `json:"parent_id,omitempty"`
@@ -228,7 +228,7 @@ func (a *ArticleCreate) Values() Values {
 	vs.SetInt("status", (int)(a.Status))
 	vs.SetStringsPtr("tags", a.Tags)
 	vs.SetStringsPtr("keywords", a.Keywords)
-	vs.SetTimePtr("review_date", a.ReviewDate)
+	vs.SetDatePtr("review_date", a.ReviewDate)
 	vs.SetInt64("parent_id", a.ParentID)
 	vs.SetString("language", a.Language)
 	return vs

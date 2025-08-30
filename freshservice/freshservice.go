@@ -47,11 +47,11 @@ func (fo *FilterOption) Values() Values {
 	return q
 }
 
-func ParseDate(s string) (*Date, error) {
+func ParseDate(s string) (Date, error) {
 	return fresh.ParseDate(s)
 }
 
-func ParseTime(s string) (*Time, error) {
+func ParseTime(s string) (Time, error) {
 	return fresh.ParseTime(s)
 }
 

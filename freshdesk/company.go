@@ -22,7 +22,7 @@ type Company struct {
 	AccountTier string `json:"account_tier,omitempty"`
 
 	// Date when your contract or relationship with the company is due for renewal
-	RenewalDate *Time `json:"renewal_date,omitempty"`
+	RenewalDate *Date `json:"renewal_date,omitempty"`
 
 	//The industry the company serves in
 	Industry string `json:"industry,omitempty"`
@@ -59,7 +59,7 @@ type CompanyCreate struct {
 	AccountTier string `json:"account_tier,omitempty"`
 
 	// Date when your contract or relationship with the company is due for renewal
-	RenewalDate *Time `json:"renewal_date,omitempty"`
+	RenewalDate *Date `json:"renewal_date,omitempty"`
 
 	//The industry the company serves in
 	Industry string `json:"industry,omitempty"`

@@ -1,6 +1,7 @@
 package fresh
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/askasoft/pango/str"
@@ -8,22 +9,20 @@ import (
 )
 
 const (
-	DateFormat     = "2006-01-02"
-	TimeFormat     = time.RFC3339 //"2006-01-02T15:04:05Z07:00"
-	jsonDateFormat = `"` + DateFormat + `"`
-	jsonTimeFormat = `"` + TimeFormat + `"`
+	DateFormat = "2006-01-02"
+	TimeFormat = time.RFC3339 //"2006-01-02T15:04:05Z07:00"
 )
 
 type Date struct {
 	time.Time
 }
 
-func ParseDate(s string) (*Date, error) {
-	t, err := time.ParseInLocation(DateFormat, s, time.UTC)
+func ParseDate(s string) (Date, error) {
+	t, err := tmu.ParseInLocation(s, time.UTC, DateFormat)
 	if err != nil {
-		return nil, err
+		return Date{}, err
 	}
-	return &Date{t}, nil
+	return Date{t}, nil
 }
 
 func (d *Date) String() string {
@@ -31,19 +30,26 @@ func (d *Date) String() string {
 }
 
 func (d *Date) MarshalJSON() ([]byte, error) {
-	bs := make([]byte, 0, len(jsonDateFormat))
-	bs = d.AppendFormat(bs, jsonDateFormat)
+	bs := make([]byte, 0, len(DateFormat)+2)
+	bs = append(bs, '"')
+	bs = d.AppendFormat(bs, DateFormat)
+	bs = append(bs, '"')
 	return bs, nil
 }
 
 func (d *Date) UnmarshalJSON(data []byte) (err error) {
-	// Ignore null, like in the main JSON package.
 	js := str.UnsafeString(data)
-	if js == "null" {
+
+	// Ignore null, like in the main JSON package.
+	if js == "" || js == "null" {
 		return
 	}
 
-	d.Time, err = time.Parse(jsonDateFormat, js)
+	if !str.StartsWithByte(js, '"') || !str.EndsWithByte(js, '"') {
+		return fmt.Errorf("fresh: invalid date format %q", js)
+	}
+
+	d.Time, err = tmu.ParseInLocation(js[1:len(js)-1], time.UTC, DateFormat)
 	return
 }
 
@@ -51,12 +57,12 @@ type Time struct {
 	time.Time
 }
 
-func ParseTime(s string) (*Time, error) {
-	t, err := time.ParseInLocation(TimeFormat, s, time.UTC)
+func ParseTime(s string) (Time, error) {
+	t, err := tmu.ParseInLocation(s, time.UTC, TimeFormat, DateFormat)
 	if err != nil {
-		return nil, err
+		return Time{}, err
 	}
-	return &Time{t}, nil
+	return Time{t}, nil
 }
 
 func (t *Time) String() string {
@@ -64,8 +70,10 @@ func (t *Time) String() string {
 }
 
 func (t *Time) MarshalJSON() ([]byte, error) {
-	bs := make([]byte, 0, len(jsonTimeFormat))
-	bs = t.Time.UTC().AppendFormat(bs, jsonTimeFormat)
+	bs := make([]byte, 0, len(TimeFormat)+2)
+	bs = append(bs, '"')
+	bs = t.Time.UTC().AppendFormat(bs, TimeFormat)
+	bs = append(bs, '"')
 	return bs, nil
 }
 
@@ -76,7 +84,12 @@ func (t *Time) UnmarshalJSON(data []byte) (err error) {
 		return
 	}
 
-	t.Time, err = time.ParseInLocation(jsonTimeFormat, js, time.UTC)
+	if !str.StartsWithByte(js, '"') || !str.EndsWithByte(js, '"') {
+		return fmt.Errorf("fresh: invalid time format %q", js)
+	}
+
+	// parse time and date format to prevent error
+	t.Time, err = tmu.ParseInLocation(js[1:len(js)-1], time.UTC, TimeFormat, DateFormat)
 	return
 }
 

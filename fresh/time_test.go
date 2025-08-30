@@ -1,20 +1,52 @@
 package fresh
 
 import (
-	"fmt"
 	"testing"
-	"time"
 )
 
+func TestParseDate(t *testing.T) {
+	tests := []struct {
+		s string
+		w string
+	}{
+		{"2020-01-02", "2020-01-02"},
+		{"2022-02-02", "2022-02-02"},
+		{"2023-03-02", "2023-03-02"},
+	}
+
+	for i, tt := range tests {
+		ta, err := ParseDate(tt.s)
+		if err != nil {
+			t.Fatalf("[%d] ParseDate(%q) = %v", i, tt.s, err)
+		}
+
+		sa := ta.String()
+		if sa != tt.w {
+			t.Fatalf("[%d] ParseDate(%q) = %v, want %q", i, tt.s, sa, tt.w)
+		}
+	}
+}
+
 func TestParseTime(t *testing.T) {
-	tml, _ := time.Parse(TimeFormat, "2020-01-02T03:04:05Z")
-	fmt.Println(tml.String())
+	tests := []struct {
+		s string
+		w string
+	}{
+		{"2020-01-02T03:04:05Z", "2020-01-02T03:04:05Z"},
+		{"2020-01-02T03:04:05+08:00", "2020-01-01T19:04:05Z"},
+	}
 
-	tmu, _ := time.ParseInLocation(TimeFormat, "2020-01-02T03:04:05Z", time.UTC)
-	fmt.Println(tmu.String())
+	for i, tt := range tests {
+		ta, err := ParseTime(tt.s)
+		if err != nil {
+			t.Fatalf("[%d] ParseTime(%q) = %v", i, tt.s, err)
+		}
 
-	tm3, _ := time.ParseInLocation(TimeFormat, "2020-01-02T03:04:05+08:00", time.UTC)
-	fmt.Println(tm3.String())
+		sa := ta.String()
+		if sa != tt.w {
+			t.Fatalf("[%d] ParseTime(%q) = %v, want %q", i, tt.s, sa, tt.w)
+		}
+	}
 }
 
 func TestParseTimeSpent(t *testing.T) {
