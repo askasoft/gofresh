@@ -34,6 +34,16 @@ type ResultError struct {
 	RetryAfter  time.Duration `json:"-"`
 }
 
+func AsResultError(err error) (re *ResultError, ok bool) {
+	ok = errors.As(err, &re)
+	return
+}
+
+func IsResultError(err error) bool {
+	_, ok := AsResultError(err)
+	return ok
+}
+
 func newResultError(res *http.Response) *ResultError {
 	return &ResultError{
 		Method:     res.Request.Method,
@@ -91,8 +101,7 @@ func (re *ResultError) Error() string {
 }
 
 func shouldRetry(err error) bool {
-	var re *ResultError
-	if errors.As(err, &re) {
+	if re, ok := AsResultError(err); ok {
 		return re.StatusCode == http.StatusTooManyRequests || (re.StatusCode >= 500 && re.StatusCode <= 599)
 	}
 	return !errors.Is(err, context.Canceled)

@@ -52,10 +52,14 @@ func TestSolutionAPIs(t *testing.T) {
 	}()
 
 	ac := &ArticleCreate{
-		Title:       "Test Article",
-		Description: "Test Article for API Test",
-		Status:      ArticleStatusDraft,
-		Tags:        &[]string{"リンゴ"},
+		Title: "Test Article",
+		Description: `<p>Test Article for API Test <img data-source="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAGwSURBVEhLtZa9SgNBEMc9sUxxRcoUKSzSWIhXpFMhhYWFhaBg4yPYiWCXZxBLERsLRS3EQkEfwCKdjWJAwSKCgoKCcudv4O5YLrt7EzgXhiU3/4+b2ckmwVjJSpKkQ6wAi4gwhT+z3wRBcEz0yjSseUTrcRyfsHsXmD0AmbHOC9Ii8VImnuXBPglHpQ5wwSVM7sNnTG7Za4JwDdCjxyAiH3nyA2mtaTJufiDZ5dCaqlItILh1NHatfN5skvjx9Z38m69CgzuXmZgVrPIGE763Jx9qKsRozWYw6xOHdER+nn2KkO+Bb+UV5CBN6WC6QtBgbRVozrahAbmm6HtUsgtPC19tFdxXZYBOfkbmFJ1VaHA1VAHjd0pp70oTZzvR+EVrx2Ygfdsq6eu55BHYR8hlcki+n+kERUFG8BrA0BwjeAv2M8WLQBtcy+SD6fNsmnB3AlBLrgTtVW1c2QN4bVWLATaIS60J2Du5y1TiJgjSBvFVZgTmwCU+dAZFoPxGEEs8nyHC9Bwe2GvEJv2WXZb0vjdyFT4Cxk3e/kIqlOGoVLwwPevpYHT+00T+hWwXDf4AJAOUqWcDhbwAAAAASUVORK5CYII="></p>
+<script>document.querySelectorAll("img[data-source]").forEach(img => {
+	img.setAttribute("src", img.getAttribute("data-source"));
+	img.removeAttribute("data-source");
+});</script>`,
+		Status: ArticleStatusDraft,
+		Tags:   &[]string{"リンゴ"},
 	}
 	art, err := fd.CreateArticle(ctxbg, fol.ID, ac)
 	if err != nil {
@@ -125,6 +129,9 @@ func TestSolutionAPIs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
+	fmt.Println(ga.Description)
+	fmt.Println(ga.Tags)
+	fmt.Println(ga.Attachments)
 
 	if len(ga.Tags) > 0 {
 		t.Fatalf("Tags exists: %v", ga.Tags)
