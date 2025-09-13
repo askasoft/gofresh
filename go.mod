@@ -1,5 +1,5 @@
 module github.com/askasoft/gofresh
 
-go 1.23.0
+go 1.24.0
 
-require github.com/askasoft/pango v1.2.3
+require github.com/askasoft/pango v1.2.4
