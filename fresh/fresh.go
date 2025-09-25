@@ -66,6 +66,14 @@ func (fresh *Fresh) authenticate(req *http.Request) {
 	}
 }
 
+func (fresh *Fresh) shouldRetry(err error) bool {
+	sr := fresh.ShouldRetry
+	if sr == nil {
+		sr = shouldRetry
+	}
+	return sr(err)
+}
+
 func (fresh *Fresh) call(req *http.Request) (res *http.Response, err error) {
 	client := &http.Client{
 		Transport: fresh.Transport,
@@ -80,11 +88,7 @@ func (fresh *Fresh) call(req *http.Request) (res *http.Response, err error) {
 
 	res, err = client.Do(req)
 	if err != nil {
-		fsr := fresh.ShouldRetry
-		if fsr == nil {
-			fsr = shouldRetry
-		}
-		if fsr(err) {
+		if fresh.shouldRetry(err) {
 			err = ret.NewRetryError(err, fresh.RetryAfter)
 		}
 		return res, err
@@ -94,29 +98,30 @@ func (fresh *Fresh) call(req *http.Request) (res *http.Response, err error) {
 	return res, nil
 }
 
-func (fresh *Fresh) authAndCall(req *http.Request) (res *http.Response, err error) {
+func (fresh *Fresh) authAndCall(req *http.Request) (*http.Response, error) {
 	fresh.authenticate(req)
 	return fresh.call(req)
 }
 
-func (fresh *Fresh) doCall(req *http.Request, result any) error {
-	res, err := fresh.authAndCall(req)
-	if err != nil {
-		return err
-	}
-
-	return fresh.decodeResponse(res, result)
+func (fresh *Fresh) DoCall(req *http.Request, result any) error {
+	_, err := fresh.doCall(req, result)
+	return err
 }
 
-func (fresh *Fresh) decodeResponse(res *http.Response, result any) error {
+func (fresh *Fresh) doCall(req *http.Request, result any) (*http.Response, error) {
+	res, err := fresh.authAndCall(req)
+	if err != nil {
+		return res, err
+	}
+
 	defer iox.DrainAndClose(res.Body)
 
 	decoder := json.NewDecoder(res.Body)
 	if res.StatusCode == http.StatusOK || res.StatusCode == http.StatusCreated || res.StatusCode == http.StatusNoContent {
 		if result != nil {
-			return decoder.Decode(result)
+			return res, decoder.Decode(result)
 		}
-		return nil
+		return res, nil
 	}
 
 	re := newResultError(res)
@@ -124,12 +129,7 @@ func (fresh *Fresh) decodeResponse(res *http.Response, result any) error {
 		_ = decoder.Decode(re)
 	}
 
-	fsr := fresh.ShouldRetry
-	if fsr == nil {
-		fsr = shouldRetry
-	}
-
-	if fsr(re) {
+	if fresh.shouldRetry(re) {
 		s := res.Header.Get("Retry-After")
 		n := num.Atoi(s)
 		if n > 0 {
@@ -139,7 +139,7 @@ func (fresh *Fresh) decodeResponse(res *http.Response, result any) error {
 		}
 	}
 
-	return re
+	return res, re
 }
 
 func (fresh *Fresh) DoGet(ctx context.Context, url string, result any) error {
@@ -154,7 +154,7 @@ func (fresh *Fresh) doGet(ctx context.Context, url string, result any) error {
 		return err
 	}
 
-	return fresh.doCall(req, result)
+	return fresh.DoCall(req, result)
 }
 
 func (fresh *Fresh) DoList(ctx context.Context, url string, lo ListOption, ap any) (next bool, err error) {
@@ -176,12 +176,7 @@ func (fresh *Fresh) doList(ctx context.Context, url string, lo ListOption, resul
 		req.URL.RawQuery = q.Encode()
 	}
 
-	res, err := fresh.authAndCall(req)
-	if err != nil {
-		return false, err
-	}
-
-	err = fresh.decodeResponse(res, result)
+	res, err := fresh.doCall(req, result)
 	if err != nil {
 		return false, err
 	}
@@ -210,7 +205,7 @@ func (fresh *Fresh) doPost(ctx context.Context, url string, source, result any) 
 		req.Header.Set("Content-Type", ct)
 	}
 
-	return fresh.doCall(req, result)
+	return fresh.DoCall(req, result)
 }
 
 func (fresh *Fresh) DoPut(ctx context.Context, url string, source, result any) error {
@@ -233,7 +228,7 @@ func (fresh *Fresh) doPut(ctx context.Context, url string, source, result any) e
 		req.Header.Set("Content-Type", ct)
 	}
 
-	return fresh.doCall(req, result)
+	return fresh.DoCall(req, result)
 }
 
 func (fresh *Fresh) DoDelete(ctx context.Context, url string) error {
@@ -248,7 +243,7 @@ func (fresh *Fresh) doDelete(ctx context.Context, url string) error {
 		return err
 	}
 
-	return fresh.doCall(req, nil)
+	return fresh.DoCall(req, nil)
 }
 
 func (fresh *Fresh) DoDownload(ctx context.Context, url string) (buf []byte, err error) {
