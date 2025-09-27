@@ -80,22 +80,14 @@ func (fresh *Fresh) call(req *http.Request) (res *http.Response, err error) {
 		Timeout:   fresh.Timeout,
 	}
 
-	if log := fresh.Logger; log != nil {
-		log.Debugf("%s %s", req.Method, req.URL)
-	}
-
-	rid := httplog.TraceHttpRequest(fresh.Logger, req)
-
-	res, err = client.Do(req)
+	res, err = httplog.TraceClientDo(fresh.Logger, client, req)
 	if err != nil {
 		if fresh.shouldRetry(err) {
 			err = ret.NewRetryError(err, fresh.RetryAfter)
 		}
-		return res, err
 	}
 
-	httplog.TraceHttpResponse(fresh.Logger, res, rid)
-	return res, nil
+	return res, err
 }
 
 func (fresh *Fresh) authAndCall(req *http.Request) (*http.Response, error) {
