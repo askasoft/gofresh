@@ -7,30 +7,30 @@ import "context"
 
 type ListGroupsOption = PageOption
 
-func (fd *Freshdesk) GetGroup(ctx context.Context, gid int64) (*Group, error) {
-	url := fd.Endpoint("/groups/%d", gid)
+func (c *Client) GetGroup(ctx context.Context, gid int64) (*Group, error) {
+	url := c.Endpoint("/groups/%d", gid)
 	group := &Group{}
-	err := fd.DoGet(ctx, url, group)
+	err := c.DoGet(ctx, url, group)
 	return group, err
 }
 
-func (fd *Freshdesk) CreateGroup(ctx context.Context, group *GroupCreate) (*Group, error) {
-	url := fd.Endpoint("/groups")
+func (c *Client) CreateGroup(ctx context.Context, group *GroupCreate) (*Group, error) {
+	url := c.Endpoint("/groups")
 	result := &Group{}
-	if err := fd.DoPost(ctx, url, group, result); err != nil {
+	if err := c.DoPost(ctx, url, group, result); err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func (fd *Freshdesk) ListGroups(ctx context.Context, lgo *ListGroupsOption) ([]*Group, bool, error) {
-	url := fd.Endpoint("/groups")
+func (c *Client) ListGroups(ctx context.Context, lgo *ListGroupsOption) ([]*Group, bool, error) {
+	url := c.Endpoint("/groups")
 	groups := []*Group{}
-	next, err := fd.DoList(ctx, url, lgo, &groups)
+	next, err := c.DoList(ctx, url, lgo, &groups)
 	return groups, next, err
 }
 
-func (fd *Freshdesk) IterGroups(ctx context.Context, lgo *ListGroupsOption, igf func(*Group) error) error {
+func (c *Client) IterGroups(ctx context.Context, lgo *ListGroupsOption, igf func(*Group) error) error {
 	if lgo == nil {
 		lgo = &ListGroupsOption{}
 	}
@@ -42,7 +42,7 @@ func (fd *Freshdesk) IterGroups(ctx context.Context, lgo *ListGroupsOption, igf 
 	}
 
 	for {
-		groups, next, err := fd.ListGroups(ctx, lgo)
+		groups, next, err := c.ListGroups(ctx, lgo)
 		if err != nil {
 			return err
 		}
@@ -59,16 +59,16 @@ func (fd *Freshdesk) IterGroups(ctx context.Context, lgo *ListGroupsOption, igf 
 	return nil
 }
 
-func (fd *Freshdesk) UpdateGroup(ctx context.Context, gid int64, group *GroupUpdate) (*Group, error) {
-	url := fd.Endpoint("/groups/%d", gid)
+func (c *Client) UpdateGroup(ctx context.Context, gid int64, group *GroupUpdate) (*Group, error) {
+	url := c.Endpoint("/groups/%d", gid)
 	result := &Group{}
-	if err := fd.DoPut(ctx, url, group, result); err != nil {
+	if err := c.DoPut(ctx, url, group, result); err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func (fd *Freshdesk) DeleteGroup(ctx context.Context, gid int64) error {
-	url := fd.Endpoint("/groups/%d", gid)
-	return fd.DoDelete(ctx, url)
+func (c *Client) DeleteGroup(ctx context.Context, gid int64) error {
+	url := c.Endpoint("/groups/%d", gid)
+	return c.DoDelete(ctx, url)
 }

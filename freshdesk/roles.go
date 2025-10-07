@@ -7,21 +7,21 @@ import "context"
 
 type ListRolesOption = PageOption
 
-func (fd *Freshdesk) GetRole(ctx context.Context, rid int64) (*Role, error) {
-	url := fd.Endpoint("/roles/%d", rid)
+func (c *Client) GetRole(ctx context.Context, rid int64) (*Role, error) {
+	url := c.Endpoint("/roles/%d", rid)
 	role := &Role{}
-	err := fd.DoGet(ctx, url, role)
+	err := c.DoGet(ctx, url, role)
 	return role, err
 }
 
-func (fd *Freshdesk) ListRoles(ctx context.Context, lro *ListRolesOption) ([]*Role, bool, error) {
-	url := fd.Endpoint("/roles")
+func (c *Client) ListRoles(ctx context.Context, lro *ListRolesOption) ([]*Role, bool, error) {
+	url := c.Endpoint("/roles")
 	roles := []*Role{}
-	next, err := fd.DoList(ctx, url, lro, &roles)
+	next, err := c.DoList(ctx, url, lro, &roles)
 	return roles, next, err
 }
 
-func (fd *Freshdesk) IterRoles(ctx context.Context, lro *ListRolesOption, irf func(*Role) error) error {
+func (c *Client) IterRoles(ctx context.Context, lro *ListRolesOption, irf func(*Role) error) error {
 	if lro == nil {
 		lro = &ListRolesOption{}
 	}
@@ -33,7 +33,7 @@ func (fd *Freshdesk) IterRoles(ctx context.Context, lro *ListRolesOption, irf fu
 	}
 
 	for {
-		roles, next, err := fd.ListRoles(ctx, lro)
+		roles, next, err := c.ListRoles(ctx, lro)
 		if err != nil {
 			return err
 		}

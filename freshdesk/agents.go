@@ -39,21 +39,21 @@ func (lao *ListAgentsOption) Values() Values {
 	return q
 }
 
-func (fd *Freshdesk) GetAgent(ctx context.Context, aid int64) (*Agent, error) {
-	url := fd.Endpoint("/agents/%d", aid)
+func (c *Client) GetAgent(ctx context.Context, aid int64) (*Agent, error) {
+	url := c.Endpoint("/agents/%d", aid)
 	agent := &Agent{}
-	err := fd.DoGet(ctx, url, agent)
+	err := c.DoGet(ctx, url, agent)
 	return agent, err
 }
 
-func (fd *Freshdesk) ListAgents(ctx context.Context, lao *ListAgentsOption) ([]*Agent, bool, error) {
-	url := fd.Endpoint("/agents")
+func (c *Client) ListAgents(ctx context.Context, lao *ListAgentsOption) ([]*Agent, bool, error) {
+	url := c.Endpoint("/agents")
 	agents := []*Agent{}
-	next, err := fd.DoList(ctx, url, lao, &agents)
+	next, err := c.DoList(ctx, url, lao, &agents)
 	return agents, next, err
 }
 
-func (fd *Freshdesk) IterAgents(ctx context.Context, lao *ListAgentsOption, iaf func(*Agent) error) error {
+func (c *Client) IterAgents(ctx context.Context, lao *ListAgentsOption, iaf func(*Agent) error) error {
 	if lao == nil {
 		lao = &ListAgentsOption{}
 	}
@@ -65,7 +65,7 @@ func (fd *Freshdesk) IterAgents(ctx context.Context, lao *ListAgentsOption, iaf 
 	}
 
 	for {
-		agents, next, err := fd.ListAgents(ctx, lao)
+		agents, next, err := c.ListAgents(ctx, lao)
 		if err != nil {
 			return err
 		}
@@ -82,39 +82,39 @@ func (fd *Freshdesk) IterAgents(ctx context.Context, lao *ListAgentsOption, iaf 
 	return nil
 }
 
-func (fd *Freshdesk) CreateAgent(ctx context.Context, agent *AgentCreate) (*Agent, error) {
-	url := fd.Endpoint("/agents")
+func (c *Client) CreateAgent(ctx context.Context, agent *AgentCreate) (*Agent, error) {
+	url := c.Endpoint("/agents")
 	result := &Agent{}
-	if err := fd.DoPost(ctx, url, agent, result); err != nil {
+	if err := c.DoPost(ctx, url, agent, result); err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func (fd *Freshdesk) UpdateAgent(ctx context.Context, aid int64, agent *AgentUpdate) (*Agent, error) {
-	url := fd.Endpoint("/agents/%d", aid)
+func (c *Client) UpdateAgent(ctx context.Context, aid int64, agent *AgentUpdate) (*Agent, error) {
+	url := c.Endpoint("/agents/%d", aid)
 	result := &Agent{}
-	if err := fd.DoPut(ctx, url, agent, result); err != nil {
+	if err := c.DoPut(ctx, url, agent, result); err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func (fd *Freshdesk) DeleteAgent(ctx context.Context, aid int64) error {
-	url := fd.Endpoint("/agents/%d", aid)
-	return fd.DoDelete(ctx, url)
+func (c *Client) DeleteAgent(ctx context.Context, aid int64) error {
+	url := c.Endpoint("/agents/%d", aid)
+	return c.DoDelete(ctx, url)
 }
 
-func (fd *Freshdesk) GetCurrentAgent(ctx context.Context) (*Agent, error) {
-	url := fd.Endpoint("/agents/me")
+func (c *Client) GetCurrentAgent(ctx context.Context) (*Agent, error) {
+	url := c.Endpoint("/agents/me")
 	agent := &Agent{}
-	err := fd.DoGet(ctx, url, agent)
+	err := c.DoGet(ctx, url, agent)
 	return agent, err
 }
 
-func (fd *Freshdesk) SearchAgents(ctx context.Context, keyword string) ([]*User, error) {
-	url := fd.Endpoint("/agents/autocomplete?term=%s", url.QueryEscape(keyword))
+func (c *Client) SearchAgents(ctx context.Context, keyword string) ([]*User, error) {
+	url := c.Endpoint("/agents/autocomplete?term=%s", url.QueryEscape(keyword))
 	agents := []*User{}
-	err := fd.DoGet(ctx, url, &agents)
+	err := c.DoGet(ctx, url, &agents)
 	return agents, err
 }

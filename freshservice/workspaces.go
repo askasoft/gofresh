@@ -7,21 +7,21 @@ import "context"
 
 type ListWorkspacesOption = PageOption
 
-func (fs *Freshservice) GetWorkspace(ctx context.Context, id int64) (*Workspace, error) {
-	url := fs.Endpoint("/workspaces/%d", id)
+func (c *Client) GetWorkspace(ctx context.Context, id int64) (*Workspace, error) {
+	url := c.Endpoint("/workspaces/%d", id)
 	result := &workspaceResult{}
-	err := fs.DoGet(ctx, url, result)
+	err := c.DoGet(ctx, url, result)
 	return result.Workspace, err
 }
 
-func (fs *Freshservice) ListWorkspaces(ctx context.Context, lwo *ListWorkspacesOption) ([]*Workspace, bool, error) {
-	url := fs.Endpoint("/workspaces")
+func (c *Client) ListWorkspaces(ctx context.Context, lwo *ListWorkspacesOption) ([]*Workspace, bool, error) {
+	url := c.Endpoint("/workspaces")
 	result := &workspacesResult{}
-	next, err := fs.DoList(ctx, url, lwo, result)
+	next, err := c.DoList(ctx, url, lwo, result)
 	return result.Workspaces, next, err
 }
 
-func (fs *Freshservice) IterWorkspaces(ctx context.Context, lwo *ListWorkspacesOption, iwf func(*Workspace) error) error {
+func (c *Client) IterWorkspaces(ctx context.Context, lwo *ListWorkspacesOption, iwf func(*Workspace) error) error {
 	if lwo == nil {
 		lwo = &ListWorkspacesOption{}
 	}
@@ -33,7 +33,7 @@ func (fs *Freshservice) IterWorkspaces(ctx context.Context, lwo *ListWorkspacesO
 	}
 
 	for {
-		ws, next, err := fs.ListWorkspaces(ctx, lwo)
+		ws, next, err := c.ListWorkspaces(ctx, lwo)
 		if err != nil {
 			return err
 		}

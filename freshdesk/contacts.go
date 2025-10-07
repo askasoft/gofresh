@@ -54,52 +54,52 @@ type FilterContactsResult struct {
 	Results []*Contact `json:"results"`
 }
 
-func (fd *Freshdesk) CreateContact(ctx context.Context, contact *ContactCreate) (*Contact, error) {
-	url := fd.Endpoint("/contacts")
+func (c *Client) CreateContact(ctx context.Context, contact *ContactCreate) (*Contact, error) {
+	url := c.Endpoint("/contacts")
 	result := &Contact{}
-	if err := fd.DoPost(ctx, url, contact, result); err != nil {
+	if err := c.DoPost(ctx, url, contact, result); err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func (fd *Freshdesk) UpdateContact(ctx context.Context, cid int64, contact *ContactUpdate) (*Contact, error) {
-	url := fd.Endpoint("/contacts/%d", cid)
+func (c *Client) UpdateContact(ctx context.Context, cid int64, contact *ContactUpdate) (*Contact, error) {
+	url := c.Endpoint("/contacts/%d", cid)
 	result := &Contact{}
-	if err := fd.DoPut(ctx, url, contact, result); err != nil {
+	if err := c.DoPut(ctx, url, contact, result); err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func (fd *Freshdesk) GetContact(ctx context.Context, cid int64) (*Contact, error) {
-	url := fd.Endpoint("/contacts/%d", cid)
+func (c *Client) GetContact(ctx context.Context, cid int64) (*Contact, error) {
+	url := c.Endpoint("/contacts/%d", cid)
 	contact := &Contact{}
-	err := fd.DoGet(ctx, url, contact)
+	err := c.DoGet(ctx, url, contact)
 	return contact, err
 }
 
-func (fd *Freshdesk) DeleteContact(ctx context.Context, cid int64) error {
-	url := fd.Endpoint("/contacts/%d", cid)
-	return fd.DoDelete(ctx, url)
+func (c *Client) DeleteContact(ctx context.Context, cid int64) error {
+	url := c.Endpoint("/contacts/%d", cid)
+	return c.DoDelete(ctx, url)
 }
 
-func (fd *Freshdesk) HardDeleteContact(ctx context.Context, cid int64, force ...bool) error {
-	url := fd.Endpoint("/contacts/%d/hard_delete", cid)
+func (c *Client) HardDeleteContact(ctx context.Context, cid int64, force ...bool) error {
+	url := c.Endpoint("/contacts/%d/hard_delete", cid)
 	if len(force) > 0 && force[0] {
 		url += "?force=true"
 	}
-	return fd.DoDelete(ctx, url)
+	return c.DoDelete(ctx, url)
 }
 
-func (fd *Freshdesk) ListContacts(ctx context.Context, lco *ListContactsOption) ([]*Contact, bool, error) {
-	url := fd.Endpoint("/contacts")
+func (c *Client) ListContacts(ctx context.Context, lco *ListContactsOption) ([]*Contact, bool, error) {
+	url := c.Endpoint("/contacts")
 	contacts := []*Contact{}
-	next, err := fd.DoList(ctx, url, lco, &contacts)
+	next, err := c.DoList(ctx, url, lco, &contacts)
 	return contacts, next, err
 }
 
-func (fd *Freshdesk) IterContacts(ctx context.Context, lco *ListContactsOption, icf func(*Contact) error) error {
+func (c *Client) IterContacts(ctx context.Context, lco *ListContactsOption, icf func(*Contact) error) error {
 	if lco == nil {
 		lco = &ListContactsOption{}
 	}
@@ -111,7 +111,7 @@ func (fd *Freshdesk) IterContacts(ctx context.Context, lco *ListContactsOption, 
 	}
 
 	for {
-		contacts, next, err := fd.ListContacts(ctx, lco)
+		contacts, next, err := c.ListContacts(ctx, lco)
 		if err != nil {
 			return err
 		}
@@ -128,41 +128,41 @@ func (fd *Freshdesk) IterContacts(ctx context.Context, lco *ListContactsOption, 
 	return nil
 }
 
-func (fd *Freshdesk) SearchContacts(ctx context.Context, keyword string) ([]*User, error) {
-	url := fd.Endpoint("/contacts/autocomplete?term=%s", url.QueryEscape(keyword))
+func (c *Client) SearchContacts(ctx context.Context, keyword string) ([]*User, error) {
+	url := c.Endpoint("/contacts/autocomplete?term=%s", url.QueryEscape(keyword))
 	contacts := []*User{}
-	err := fd.DoGet(ctx, url, &contacts)
+	err := c.DoGet(ctx, url, &contacts)
 	return contacts, err
 }
 
 // FilterContacts Use custom contact fields that you have created in your account to filter through the contacts and get a list of contacts matching the specified contact fields.
 // Format: "(contact_field:integer OR contact_field:'string') AND contact_field:boolean"
 // See: https://developers.freshdesk.com/api/#filter_contacts
-func (fd *Freshdesk) FilterContacts(ctx context.Context, fco *FilterContactsOption) ([]*Contact, int, error) {
-	url := fd.Endpoint("/search/contacts")
+func (c *Client) FilterContacts(ctx context.Context, fco *FilterContactsOption) ([]*Contact, int, error) {
+	url := c.Endpoint("/search/contacts")
 	fcr := &FilterContactsResult{}
-	_, err := fd.DoList(ctx, url, fco, fcr)
+	_, err := c.DoList(ctx, url, fco, fcr)
 	return fcr.Results, fcr.Total, err
 }
 
-func (fd *Freshdesk) RestoreContact(ctx context.Context, cid int64) error {
-	url := fd.Endpoint("/contacts/%d/restore", cid)
-	return fd.DoPut(ctx, url, nil, nil)
+func (c *Client) RestoreContact(ctx context.Context, cid int64) error {
+	url := c.Endpoint("/contacts/%d/restore", cid)
+	return c.DoPut(ctx, url, nil, nil)
 }
 
-func (fd *Freshdesk) InviteContact(ctx context.Context, cid int64) error {
-	url := fd.Endpoint("/contacts/%d/send_invite", cid)
-	return fd.DoPut(ctx, url, nil, nil)
+func (c *Client) InviteContact(ctx context.Context, cid int64) error {
+	url := c.Endpoint("/contacts/%d/send_invite", cid)
+	return c.DoPut(ctx, url, nil, nil)
 }
 
-func (fd *Freshdesk) MergeContacts(ctx context.Context, cm *ContactsMerge) error {
-	url := fd.Endpoint("/contacts/merge")
-	return fd.DoPost(ctx, url, nil, nil)
+func (c *Client) MergeContacts(ctx context.Context, cm *ContactsMerge) error {
+	url := c.Endpoint("/contacts/merge")
+	return c.DoPost(ctx, url, nil, nil)
 }
 
 // ExportContacts return a job id, call GetExportedContactsURL() to get the job detail
-func (fd *Freshdesk) ExportContacts(ctx context.Context, defaultFields, customFields []string) (string, error) {
-	url := fd.Endpoint("/contacts/export")
+func (c *Client) ExportContacts(ctx context.Context, defaultFields, customFields []string) (string, error) {
+	url := c.Endpoint("/contacts/export")
 	opt := &ExportOption{
 		Fields: &ExportFields{
 			DefaultFields: defaultFields,
@@ -170,22 +170,22 @@ func (fd *Freshdesk) ExportContacts(ctx context.Context, defaultFields, customFi
 		},
 	}
 	job := &Job{}
-	err := fd.DoPost(ctx, url, opt, job)
+	err := c.DoPost(ctx, url, opt, job)
 	return job.ID, err
 }
 
 // GetExportedContactsURL get the exported contacts url
-func (fd *Freshdesk) GetExportedContactsURL(ctx context.Context, jid string) (*Job, error) {
-	url := fd.Endpoint("/contacts/export/%s", jid)
+func (c *Client) GetExportedContactsURL(ctx context.Context, jid string) (*Job, error) {
+	url := c.Endpoint("/contacts/export/%s", jid)
 	job := &Job{}
-	err := fd.DoGet(ctx, url, job)
+	err := c.DoGet(ctx, url, job)
 	return job, err
 }
 
-func (fd *Freshdesk) MakeAgent(ctx context.Context, cid int64, agent *Agent) (*Contact, error) {
-	url := fd.Endpoint("/contacts/%d/make_agent", cid)
+func (c *Client) MakeAgent(ctx context.Context, cid int64, agent *Agent) (*Contact, error) {
+	url := c.Endpoint("/contacts/%d/make_agent", cid)
 	result := &Contact{}
-	if err := fd.DoPut(ctx, url, agent, result); err != nil {
+	if err := c.DoPut(ctx, url, agent, result); err != nil {
 		return nil, err
 	}
 	return result, nil

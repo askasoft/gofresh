@@ -7,21 +7,21 @@ import "context"
 
 type ListAgentRolesOption = PageOption
 
-func (fs *Freshservice) GetAgentRole(ctx context.Context, id int64) (*AgentRole, error) {
-	url := fs.Endpoint("/roles/%d", id)
+func (c *Client) GetAgentRole(ctx context.Context, id int64) (*AgentRole, error) {
+	url := c.Endpoint("/roles/%d", id)
 	result := &agentRoleResult{}
-	err := fs.DoGet(ctx, url, result)
+	err := c.DoGet(ctx, url, result)
 	return result.Role, err
 }
 
-func (fs *Freshservice) ListAgentRoles(ctx context.Context, laro *ListAgentRolesOption) ([]*AgentRole, bool, error) {
-	url := fs.Endpoint("/roles")
+func (c *Client) ListAgentRoles(ctx context.Context, laro *ListAgentRolesOption) ([]*AgentRole, bool, error) {
+	url := c.Endpoint("/roles")
 	result := &agentRolesResult{}
-	next, err := fs.DoList(ctx, url, laro, result)
+	next, err := c.DoList(ctx, url, laro, result)
 	return result.Roles, next, err
 }
 
-func (fs *Freshservice) IterAgentRoles(ctx context.Context, laro *ListAgentRolesOption, iarf func(*AgentRole) error) error {
+func (c *Client) IterAgentRoles(ctx context.Context, laro *ListAgentRolesOption, iarf func(*AgentRole) error) error {
 	if laro == nil {
 		laro = &ListAgentRolesOption{}
 	}
@@ -33,7 +33,7 @@ func (fs *Freshservice) IterAgentRoles(ctx context.Context, laro *ListAgentRoles
 	}
 
 	for {
-		ars, next, err := fs.ListAgentRoles(ctx, laro)
+		ars, next, err := c.ListAgentRoles(ctx, laro)
 		if err != nil {
 			return err
 		}

@@ -90,74 +90,77 @@ func toString(o any) string {
 	return jsonx.Prettify(o)
 }
 
-type Freshdesk fresh.Fresh
+// alias for Client
+type Freshdesk = Client
 
-func (fd *Freshdesk) Endpoint(format string, a ...any) string {
-	return (*fresh.Fresh)(fd).Endpoint(format, a...)
+type Client fresh.Client
+
+func (c *Client) Endpoint(format string, a ...any) string {
+	return (*fresh.Client)(c).Endpoint(format, a...)
 }
 
-func (fd *Freshdesk) DoGet(ctx context.Context, url string, result any) error {
-	return (*fresh.Fresh)(fd).DoGet(ctx, url, result)
+func (c *Client) DoGet(ctx context.Context, url string, result any) error {
+	return (*fresh.Client)(c).DoGet(ctx, url, result)
 }
 
-func (fd *Freshdesk) DoList(ctx context.Context, url string, lo ListOption, result any) (bool, error) {
-	return (*fresh.Fresh)(fd).DoList(ctx, url, lo, result)
+func (c *Client) DoList(ctx context.Context, url string, lo ListOption, result any) (bool, error) {
+	return (*fresh.Client)(c).DoList(ctx, url, lo, result)
 }
 
-func (fd *Freshdesk) DoPost(ctx context.Context, url string, source, result any) error {
-	return (*fresh.Fresh)(fd).DoPost(ctx, url, source, result)
+func (c *Client) DoPost(ctx context.Context, url string, source, result any) error {
+	return (*fresh.Client)(c).DoPost(ctx, url, source, result)
 }
 
-func (fd *Freshdesk) DoPut(ctx context.Context, url string, source, result any) error {
-	return (*fresh.Fresh)(fd).DoPut(ctx, url, source, result)
+func (c *Client) DoPut(ctx context.Context, url string, source, result any) error {
+	return (*fresh.Client)(c).DoPut(ctx, url, source, result)
 }
 
-func (fd *Freshdesk) DoDelete(ctx context.Context, url string) error {
-	return (*fresh.Fresh)(fd).DoDelete(ctx, url)
+func (c *Client) DoDelete(ctx context.Context, url string) error {
+	return (*fresh.Client)(c).DoDelete(ctx, url)
 }
 
-func (fd *Freshdesk) Download(ctx context.Context, url string) ([]byte, error) {
-	return (*fresh.Fresh)(fd).DoDownload(ctx, url)
+func (c *Client) Download(ctx context.Context, url string) ([]byte, error) {
+	return (*fresh.Client)(c).DoDownload(ctx, url)
 }
 
-func (fd *Freshdesk) SaveFile(ctx context.Context, url string, path string) error {
-	return (*fresh.Fresh)(fd).DoSaveFile(ctx, url, path)
+func (c *Client) SaveFile(ctx context.Context, url string, path string) error {
+	return (*fresh.Client)(c).DoSaveFile(ctx, url, path)
 }
 
-func (fd *Freshdesk) DownloadNoAuth(ctx context.Context, url string) ([]byte, error) {
-	return (*fresh.Fresh)(fd).DoDownloadNoAuth(ctx, url)
+func (c *Client) DownloadNoAuth(ctx context.Context, url string) ([]byte, error) {
+	return (*fresh.Client)(c).DoDownloadNoAuth(ctx, url)
 }
 
-func (fd *Freshdesk) SaveFileNoAuth(ctx context.Context, url string, path string) error {
-	return (*fresh.Fresh)(fd).DoSaveFileNoAuth(ctx, url, path)
+func (c *Client) SaveFileNoAuth(ctx context.Context, url string, path string) error {
+	return (*fresh.Client)(c).DoSaveFileNoAuth(ctx, url, path)
 }
 
-func (fd *Freshdesk) DeleteAttachment(ctx context.Context, aid int64) error {
-	url := fd.Endpoint("/attachments/%d", aid)
-	return fd.DoDelete(ctx, url)
+func (c *Client) DeleteAttachment(ctx context.Context, aid int64) error {
+	url := c.Endpoint("/attachments/%d", aid)
+	return c.DoDelete(ctx, url)
 }
 
 // GetJob get job detail
-func (fd *Freshdesk) GetJob(ctx context.Context, jid string) (*Job, error) {
-	url := fd.Endpoint("/jobs/%s", jid)
+func (c *Client) GetJob(ctx context.Context, jid string) (*Job, error) {
+	url := c.Endpoint("/jobs/%s", jid)
 	job := &Job{}
-	err := fd.DoGet(ctx, url, job)
+	err := c.DoGet(ctx, url, job)
 	return job, err
 }
 
 // GetAgentTicketURL return a permlink for agent ticket URL
-func (fd *Freshdesk) GetAgentTicketURL(tid int64) string {
-	return GetAgentTicketURL(fd.Domain, tid)
+func (c *Client) GetAgentTicketURL(tid int64) string {
+	return GetAgentTicketURL(c.Domain, tid)
 }
 
 // GetSolutionArticleURL return a permlink for solution article URL
-func (fd *Freshdesk) GetSolutionArticleURL(aid int64) string {
-	return GetSolutionArticleURL(fd.Domain, aid)
+func (c *Client) GetSolutionArticleURL(aid int64) string {
+	return GetSolutionArticleURL(c.Domain, aid)
 }
 
 // GetHelpdeskAttachmentURL return a permlink for helpdesk attachment/avator URL
-func (fd *Freshdesk) GetHelpdeskAttachmentURL(aid int64) string {
-	return GetHelpdeskAttachmentURL(fd.Domain, aid)
+func (c *Client) GetHelpdeskAttachmentURL(aid int64) string {
+	return GetHelpdeskAttachmentURL(c.Domain, aid)
 }
 
 // GetAgentTicketURL return a permlink for agent ticket URL

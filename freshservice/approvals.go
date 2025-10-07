@@ -30,14 +30,14 @@ func (lao *ListApprovalsOption) Values() Values {
 	return q
 }
 
-func (fs *Freshservice) ListApprovals(ctx context.Context, lao *ListApprovalsOption) ([]*Approval, bool, error) {
-	url := fs.Endpoint("/approvals")
+func (c *Client) ListApprovals(ctx context.Context, lao *ListApprovalsOption) ([]*Approval, bool, error) {
+	url := c.Endpoint("/approvals")
 	result := &approvalsResult{}
-	next, err := fs.DoList(ctx, url, lao, result)
+	next, err := c.DoList(ctx, url, lao, result)
 	return result.Approvals, next, err
 }
 
-func (fs *Freshservice) IterApprovals(ctx context.Context, lao *ListApprovalsOption, iaf func(*Approval) error) error {
+func (c *Client) IterApprovals(ctx context.Context, lao *ListApprovalsOption, iaf func(*Approval) error) error {
 	if lao == nil {
 		lao = &ListApprovalsOption{}
 	}
@@ -49,7 +49,7 @@ func (fs *Freshservice) IterApprovals(ctx context.Context, lao *ListApprovalsOpt
 	}
 
 	for {
-		agents, next, err := fs.ListApprovals(ctx, lao)
+		agents, next, err := c.ListApprovals(ctx, lao)
 		if err != nil {
 			return err
 		}

@@ -66,39 +66,39 @@ func (sao *SearchArticlesOption) Values() Values {
 	return q
 }
 
-func (fs *Freshservice) CreateCategory(ctx context.Context, category *CategoryCreate) (*Category, error) {
-	url := fs.Endpoint("/solutions/categories")
+func (c *Client) CreateCategory(ctx context.Context, category *CategoryCreate) (*Category, error) {
+	url := c.Endpoint("/solutions/categories")
 	result := &categoryResult{}
-	if err := fs.DoPost(ctx, url, category, result); err != nil {
+	if err := c.DoPost(ctx, url, category, result); err != nil {
 		return nil, err
 	}
 	return result.Category, nil
 }
 
-func (fs *Freshservice) UpdateCategory(ctx context.Context, cid int64, category *CategoryUpdate) (*Category, error) {
-	url := fs.Endpoint("/solutions/categories/%d", cid)
+func (c *Client) UpdateCategory(ctx context.Context, cid int64, category *CategoryUpdate) (*Category, error) {
+	url := c.Endpoint("/solutions/categories/%d", cid)
 	result := &categoryResult{}
-	if err := fs.DoPut(ctx, url, category, result); err != nil {
+	if err := c.DoPut(ctx, url, category, result); err != nil {
 		return nil, err
 	}
 	return result.Category, nil
 }
 
-func (fs *Freshservice) GetCategory(ctx context.Context, cid int64) (*Category, error) {
-	url := fs.Endpoint("/solutions/categories/%d", cid)
+func (c *Client) GetCategory(ctx context.Context, cid int64) (*Category, error) {
+	url := c.Endpoint("/solutions/categories/%d", cid)
 	result := &categoryResult{}
-	err := fs.DoGet(ctx, url, result)
+	err := c.DoGet(ctx, url, result)
 	return result.Category, err
 }
 
-func (fs *Freshservice) ListCategories(ctx context.Context, lco *ListCategoriesOption) ([]*Category, bool, error) {
-	url := fs.Endpoint("/solutions/categories")
+func (c *Client) ListCategories(ctx context.Context, lco *ListCategoriesOption) ([]*Category, bool, error) {
+	url := c.Endpoint("/solutions/categories")
 	result := &categoriesResult{}
-	next, err := fs.DoList(ctx, url, lco, result)
+	next, err := c.DoList(ctx, url, lco, result)
 	return result.Categories, next, err
 }
 
-func (fs *Freshservice) IterCategories(ctx context.Context, lco *ListCategoriesOption, icf func(*Category) error) error {
+func (c *Client) IterCategories(ctx context.Context, lco *ListCategoriesOption, icf func(*Category) error) error {
 	if lco == nil {
 		lco = &ListCategoriesOption{}
 	}
@@ -110,7 +110,7 @@ func (fs *Freshservice) IterCategories(ctx context.Context, lco *ListCategoriesO
 	}
 
 	for {
-		categories, next, err := fs.ListCategories(ctx, lco)
+		categories, next, err := c.ListCategories(ctx, lco)
 		if err != nil {
 			return err
 		}
@@ -127,49 +127,49 @@ func (fs *Freshservice) IterCategories(ctx context.Context, lco *ListCategoriesO
 	return nil
 }
 
-func (fs *Freshservice) DeleteCategory(ctx context.Context, cid int64) error {
-	url := fs.Endpoint("/solutions/categories/%d", cid)
-	return fs.DoDelete(ctx, url)
+func (c *Client) DeleteCategory(ctx context.Context, cid int64) error {
+	url := c.Endpoint("/solutions/categories/%d", cid)
+	return c.DoDelete(ctx, url)
 }
 
-func (fs *Freshservice) CreateFolder(ctx context.Context, folder *FolderCreate) (*Folder, error) {
-	url := fs.Endpoint("/solutions/folders")
+func (c *Client) CreateFolder(ctx context.Context, folder *FolderCreate) (*Folder, error) {
+	url := c.Endpoint("/solutions/folders")
 	result := &folderResult{}
-	if err := fs.DoPost(ctx, url, folder, result); err != nil {
+	if err := c.DoPost(ctx, url, folder, result); err != nil {
 		return nil, err
 	}
 	return result.Foler, nil
 }
 
-func (fs *Freshservice) UpdateFolder(ctx context.Context, fid int64, folder *FolderUpdate) (*Folder, error) {
-	url := fs.Endpoint("/solutions/folders/%d", fid)
+func (c *Client) UpdateFolder(ctx context.Context, fid int64, folder *FolderUpdate) (*Folder, error) {
+	url := c.Endpoint("/solutions/folders/%d", fid)
 	result := &folderResult{}
-	if err := fs.DoPut(ctx, url, folder, result); err != nil {
+	if err := c.DoPut(ctx, url, folder, result); err != nil {
 		return nil, err
 	}
 	return result.Foler, nil
 }
 
-func (fs *Freshservice) GetFolder(ctx context.Context, fid int64) (*Folder, error) {
-	url := fs.Endpoint("/solutions/folders/%d", fid)
+func (c *Client) GetFolder(ctx context.Context, fid int64) (*Folder, error) {
+	url := c.Endpoint("/solutions/folders/%d", fid)
 	result := &folderResult{}
-	err := fs.DoGet(ctx, url, result)
+	err := c.DoGet(ctx, url, result)
 	return result.Foler, err
 }
 
-func (fs *Freshservice) ListCategoryFolders(ctx context.Context, cid int64, lfo *ListFoldersOption) ([]*Folder, bool, error) {
+func (c *Client) ListCategoryFolders(ctx context.Context, cid int64, lfo *ListFoldersOption) ([]*Folder, bool, error) {
 	if lfo == nil {
 		lfo = &ListFoldersOption{}
 	}
 	lfo.categoryID = cid
 
-	url := fs.Endpoint("/solutions/folders")
+	url := c.Endpoint("/solutions/folders")
 	result := &foldersResult{}
-	next, err := fs.DoList(ctx, url, lfo, result)
+	next, err := c.DoList(ctx, url, lfo, result)
 	return result.Folders, next, err
 }
 
-func (fs *Freshservice) IterCategoryFolders(ctx context.Context, cid int64, lfo *ListFoldersOption, iff func(*Folder) error) error {
+func (c *Client) IterCategoryFolders(ctx context.Context, cid int64, lfo *ListFoldersOption, iff func(*Folder) error) error {
 	if lfo == nil {
 		lfo = &ListFoldersOption{}
 	}
@@ -181,7 +181,7 @@ func (fs *Freshservice) IterCategoryFolders(ctx context.Context, cid int64, lfo 
 	}
 
 	for {
-		folders, next, err := fs.ListCategoryFolders(ctx, cid, lfo)
+		folders, next, err := c.ListCategoryFolders(ctx, cid, lfo)
 		if err != nil {
 			return err
 		}
@@ -198,61 +198,61 @@ func (fs *Freshservice) IterCategoryFolders(ctx context.Context, cid int64, lfo 
 	return nil
 }
 
-func (fs *Freshservice) DeleteFolder(ctx context.Context, fid int64) error {
-	url := fs.Endpoint("/solutions/folders/%d", fid)
-	return fs.DoDelete(ctx, url)
+func (c *Client) DeleteFolder(ctx context.Context, fid int64) error {
+	url := c.Endpoint("/solutions/folders/%d", fid)
+	return c.DoDelete(ctx, url)
 }
 
-func (fs *Freshservice) CreateArticle(ctx context.Context, article *ArticleCreate) (*Article, error) {
-	url := fs.Endpoint("/solutions/articles")
+func (c *Client) CreateArticle(ctx context.Context, article *ArticleCreate) (*Article, error) {
+	url := c.Endpoint("/solutions/articles")
 	result := &articleResult{}
-	if err := fs.DoPost(ctx, url, article, result); err != nil {
+	if err := c.DoPost(ctx, url, article, result); err != nil {
 		return nil, err
 	}
 	return result.Article, nil
 }
 
-func (fs *Freshservice) SendArticleToApproval(ctx context.Context, aid int64) (*Article, error) {
-	url := fs.Endpoint("/solutions/articles/%d/send_for_approval", aid)
+func (c *Client) SendArticleToApproval(ctx context.Context, aid int64) (*Article, error) {
+	url := c.Endpoint("/solutions/articles/%d/send_for_approval", aid)
 	result := &articleResult{}
-	if err := fs.DoPut(ctx, url, nil, result); err != nil {
+	if err := c.DoPut(ctx, url, nil, result); err != nil {
 		return nil, err
 	}
 	return result.Article, nil
 }
 
-func (fs *Freshservice) UpdateArticle(ctx context.Context, aid int64, article *ArticleUpdate) (*Article, error) {
-	url := fs.Endpoint("/solutions/articles/%d", aid)
+func (c *Client) UpdateArticle(ctx context.Context, aid int64, article *ArticleUpdate) (*Article, error) {
+	url := c.Endpoint("/solutions/articles/%d", aid)
 	result := &articleResult{}
-	if err := fs.DoPut(ctx, url, article, result); err != nil {
+	if err := c.DoPut(ctx, url, article, result); err != nil {
 		return nil, err
 	}
 	return result.Article, nil
 }
 
-func (fs *Freshservice) GetArticle(ctx context.Context, aid int64) (*Article, error) {
-	url := fs.Endpoint("/solutions/articles/%d", aid)
+func (c *Client) GetArticle(ctx context.Context, aid int64) (*Article, error) {
+	url := c.Endpoint("/solutions/articles/%d", aid)
 	result := &articleResult{}
-	err := fs.DoGet(ctx, url, result)
+	err := c.DoGet(ctx, url, result)
 	return result.Article, err
 }
 
-func (fs *Freshservice) ListFolderArticles(ctx context.Context, fid int64, lao *ListArticlesOption) ([]*ArticleInfo, bool, error) {
+func (c *Client) ListFolderArticles(ctx context.Context, fid int64, lao *ListArticlesOption) ([]*ArticleInfo, bool, error) {
 	if lao == nil {
 		lao = &ListArticlesOption{}
 	}
 	lao.folderID = fid
 
-	url := fs.Endpoint("/solutions/articles")
+	url := c.Endpoint("/solutions/articles")
 	result := &articlesResult{}
-	next, err := fs.DoList(ctx, url, lao, result)
+	next, err := c.DoList(ctx, url, lao, result)
 	for _, ai := range result.Articles {
 		ai.normalize()
 	}
 	return result.Articles, next, err
 }
 
-func (fs *Freshservice) IterFolderArticles(ctx context.Context, fid int64, lao *ListArticlesOption, iaf func(*ArticleInfo) error) error {
+func (c *Client) IterFolderArticles(ctx context.Context, fid int64, lao *ListArticlesOption, iaf func(*ArticleInfo) error) error {
 	if lao == nil {
 		lao = &ListArticlesOption{}
 	}
@@ -264,7 +264,7 @@ func (fs *Freshservice) IterFolderArticles(ctx context.Context, fid int64, lao *
 	}
 
 	for {
-		articles, next, err := fs.ListFolderArticles(ctx, fid, lao)
+		articles, next, err := c.ListFolderArticles(ctx, fid, lao)
 		if err != nil {
 			return err
 		}
@@ -281,22 +281,22 @@ func (fs *Freshservice) IterFolderArticles(ctx context.Context, fid int64, lao *
 	return nil
 }
 
-func (fs *Freshservice) DeleteArticle(ctx context.Context, aid int64) error {
-	url := fs.Endpoint("/solutions/articles/%d", aid)
-	return fs.DoDelete(ctx, url)
+func (c *Client) DeleteArticle(ctx context.Context, aid int64) error {
+	url := c.Endpoint("/solutions/articles/%d", aid)
+	return c.DoDelete(ctx, url)
 }
 
-func (fs *Freshservice) SearchArticles(ctx context.Context, sao *SearchArticlesOption) ([]*ArticleInfo, bool, error) {
-	url := fs.Endpoint("/solutions/articles/search")
+func (c *Client) SearchArticles(ctx context.Context, sao *SearchArticlesOption) ([]*ArticleInfo, bool, error) {
+	url := c.Endpoint("/solutions/articles/search")
 	result := &articlesResult{}
-	next, err := fs.DoList(ctx, url, sao, result)
+	next, err := c.DoList(ctx, url, sao, result)
 	for _, ai := range result.Articles {
 		ai.normalize()
 	}
 	return result.Articles, next, err
 }
 
-// func (fs *Freshservice) DeleteArticleAttachment(aid, tid int64) error {
-// 	url := fs.Endpoint("/solutions/articles/%d/attachments/%d", aid, tid)
-// 	return fs.DoDelete(ctx, url)
+// func (c *Client) DeleteArticleAttachment(aid, tid int64) error {
+// 	url := c.Endpoint("/solutions/articles/%d/attachments/%d", aid, tid)
+// 	return c.DoDelete(ctx, url)
 // }

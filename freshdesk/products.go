@@ -7,21 +7,21 @@ import "context"
 
 type ListProductsOption = PageOption
 
-func (fd *Freshdesk) GetProduct(ctx context.Context, id int64) (*Product, error) {
-	url := fd.Endpoint("/products/%d", id)
+func (c *Client) GetProduct(ctx context.Context, id int64) (*Product, error) {
+	url := c.Endpoint("/products/%d", id)
 	product := &Product{}
-	err := fd.DoGet(ctx, url, product)
+	err := c.DoGet(ctx, url, product)
 	return product, err
 }
 
-func (fd *Freshdesk) ListProducts(ctx context.Context, lpo *ListProductsOption) ([]*Product, bool, error) {
-	url := fd.Endpoint("/products")
+func (c *Client) ListProducts(ctx context.Context, lpo *ListProductsOption) ([]*Product, bool, error) {
+	url := c.Endpoint("/products")
 	products := []*Product{}
-	next, err := fd.DoList(ctx, url, lpo, &products)
+	next, err := c.DoList(ctx, url, lpo, &products)
 	return products, next, err
 }
 
-func (fd *Freshdesk) IterProducts(ctx context.Context, lpo *ListProductsOption, ipf func(*Product) error) error {
+func (c *Client) IterProducts(ctx context.Context, lpo *ListProductsOption, ipf func(*Product) error) error {
 	if lpo == nil {
 		lpo = &ListProductsOption{}
 	}
@@ -33,7 +33,7 @@ func (fd *Freshdesk) IterProducts(ctx context.Context, lpo *ListProductsOption, 
 	}
 
 	for {
-		ps, next, err := fd.ListProducts(ctx, lpo)
+		ps, next, err := c.ListProducts(ctx, lpo)
 		if err != nil {
 			return err
 		}

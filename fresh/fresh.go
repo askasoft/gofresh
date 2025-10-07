@@ -30,7 +30,7 @@ type CustomRequest interface {
 	RequestBody() (io.Reader, string, error)
 }
 
-type Fresh struct {
+type Client struct {
 	Domain   string
 	Apikey   string
 	Username string
@@ -46,62 +46,62 @@ type Fresh struct {
 }
 
 // Endpoint formats endpoint url
-func (fresh *Fresh) Endpoint(format string, a ...any) string {
-	return "https://" + fresh.Domain + "/api/v2" + fmt.Sprintf(format, a...)
+func (c *Client) Endpoint(format string, a ...any) string {
+	return "https://" + c.Domain + "/api/v2" + fmt.Sprintf(format, a...)
 }
 
-func (fresh *Fresh) RetryForError(ctx context.Context, api func() error) (err error) {
-	return ret.RetryForError(ctx, api, fresh.MaxRetries, fresh.Logger)
+func (c *Client) RetryForError(ctx context.Context, api func() error) (err error) {
+	return ret.RetryForError(ctx, api, c.MaxRetries, c.Logger)
 }
 
-func (fresh *Fresh) authenticate(req *http.Request) {
+func (c *Client) authenticate(req *http.Request) {
 	if req.Header.Get("Content-Type") == "" {
 		req.Header.Set("Content-Type", contentTypeJSON)
 	}
 
-	if fresh.Apikey != "" {
-		req.SetBasicAuth(fresh.Apikey, "X")
+	if c.Apikey != "" {
+		req.SetBasicAuth(c.Apikey, "X")
 	} else {
-		req.SetBasicAuth(fresh.Username, fresh.Password)
+		req.SetBasicAuth(c.Username, c.Password)
 	}
 }
 
-func (fresh *Fresh) shouldRetry(err error) bool {
-	sr := fresh.ShouldRetry
+func (c *Client) shouldRetry(err error) bool {
+	sr := c.ShouldRetry
 	if sr == nil {
 		sr = shouldRetry
 	}
 	return sr(err)
 }
 
-func (fresh *Fresh) call(req *http.Request) (res *http.Response, err error) {
+func (c *Client) call(req *http.Request) (res *http.Response, err error) {
 	client := &http.Client{
-		Transport: fresh.Transport,
-		Timeout:   fresh.Timeout,
+		Transport: c.Transport,
+		Timeout:   c.Timeout,
 	}
 
-	res, err = httplog.TraceClientDo(fresh.Logger, client, req)
+	res, err = httplog.TraceClientDo(c.Logger, client, req)
 	if err != nil {
-		if fresh.shouldRetry(err) {
-			err = ret.NewRetryError(err, fresh.RetryAfter)
+		if c.shouldRetry(err) {
+			err = ret.NewRetryError(err, c.RetryAfter)
 		}
 	}
 
 	return res, err
 }
 
-func (fresh *Fresh) authAndCall(req *http.Request) (*http.Response, error) {
-	fresh.authenticate(req)
-	return fresh.call(req)
+func (c *Client) authAndCall(req *http.Request) (*http.Response, error) {
+	c.authenticate(req)
+	return c.call(req)
 }
 
-func (fresh *Fresh) DoCall(req *http.Request, result any) error {
-	_, err := fresh.doCall(req, result)
+func (c *Client) DoCall(req *http.Request, result any) error {
+	_, err := c.doCall(req, result)
 	return err
 }
 
-func (fresh *Fresh) doCall(req *http.Request, result any) (*http.Response, error) {
-	res, err := fresh.authAndCall(req)
+func (c *Client) doCall(req *http.Request, result any) (*http.Response, error) {
+	res, err := c.authAndCall(req)
 	if err != nil {
 		return res, err
 	}
@@ -121,43 +121,43 @@ func (fresh *Fresh) doCall(req *http.Request, result any) (*http.Response, error
 		_ = decoder.Decode(re)
 	}
 
-	if fresh.shouldRetry(re) {
+	if c.shouldRetry(re) {
 		s := res.Header.Get("Retry-After")
 		n := num.Atoi(s)
 		if n > 0 {
 			re.RetryAfter = time.Second * time.Duration(n)
 		} else {
-			re.RetryAfter = fresh.RetryAfter
+			re.RetryAfter = c.RetryAfter
 		}
 	}
 
 	return res, re
 }
 
-func (fresh *Fresh) DoGet(ctx context.Context, url string, result any) error {
-	return fresh.RetryForError(ctx, func() error {
-		return fresh.doGet(ctx, url, result)
+func (c *Client) DoGet(ctx context.Context, url string, result any) error {
+	return c.RetryForError(ctx, func() error {
+		return c.doGet(ctx, url, result)
 	})
 }
 
-func (fresh *Fresh) doGet(ctx context.Context, url string, result any) error {
+func (c *Client) doGet(ctx context.Context, url string, result any) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return err
 	}
 
-	return fresh.DoCall(req, result)
+	return c.DoCall(req, result)
 }
 
-func (fresh *Fresh) DoList(ctx context.Context, url string, lo ListOption, ap any) (next bool, err error) {
-	err = fresh.RetryForError(ctx, func() error {
-		next, err = fresh.doList(ctx, url, lo, ap)
+func (c *Client) DoList(ctx context.Context, url string, lo ListOption, ap any) (next bool, err error) {
+	err = c.RetryForError(ctx, func() error {
+		next, err = c.doList(ctx, url, lo, ap)
 		return err
 	})
 	return
 }
 
-func (fresh *Fresh) doList(ctx context.Context, url string, lo ListOption, result any) (bool, error) {
+func (c *Client) doList(ctx context.Context, url string, lo ListOption, result any) (bool, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return false, err
@@ -168,7 +168,7 @@ func (fresh *Fresh) doList(ctx context.Context, url string, lo ListOption, resul
 		req.URL.RawQuery = q.Encode()
 	}
 
-	res, err := fresh.doCall(req, result)
+	res, err := c.doCall(req, result)
 	if err != nil {
 		return false, err
 	}
@@ -177,13 +177,13 @@ func (fresh *Fresh) doList(ctx context.Context, url string, lo ListOption, resul
 	return next, nil
 }
 
-func (fresh *Fresh) DoPost(ctx context.Context, url string, source, result any) error {
-	return fresh.RetryForError(ctx, func() error {
-		return fresh.doPost(ctx, url, source, result)
+func (c *Client) DoPost(ctx context.Context, url string, source, result any) error {
+	return c.RetryForError(ctx, func() error {
+		return c.doPost(ctx, url, source, result)
 	})
 }
 
-func (fresh *Fresh) doPost(ctx context.Context, url string, source, result any) error {
+func (c *Client) doPost(ctx context.Context, url string, source, result any) error {
 	buf, ct, err := buildRequest(source)
 	if err != nil {
 		return err
@@ -197,16 +197,16 @@ func (fresh *Fresh) doPost(ctx context.Context, url string, source, result any) 
 		req.Header.Set("Content-Type", ct)
 	}
 
-	return fresh.DoCall(req, result)
+	return c.DoCall(req, result)
 }
 
-func (fresh *Fresh) DoPut(ctx context.Context, url string, source, result any) error {
-	return fresh.RetryForError(ctx, func() error {
-		return fresh.doPut(ctx, url, source, result)
+func (c *Client) DoPut(ctx context.Context, url string, source, result any) error {
+	return c.RetryForError(ctx, func() error {
+		return c.doPut(ctx, url, source, result)
 	})
 }
 
-func (fresh *Fresh) doPut(ctx context.Context, url string, source, result any) error {
+func (c *Client) doPut(ctx context.Context, url string, source, result any) error {
 	buf, ct, err := buildRequest(source)
 	if err != nil {
 		return err
@@ -220,39 +220,39 @@ func (fresh *Fresh) doPut(ctx context.Context, url string, source, result any) e
 		req.Header.Set("Content-Type", ct)
 	}
 
-	return fresh.DoCall(req, result)
+	return c.DoCall(req, result)
 }
 
-func (fresh *Fresh) DoDelete(ctx context.Context, url string) error {
-	return fresh.RetryForError(ctx, func() error {
-		return fresh.doDelete(ctx, url)
+func (c *Client) DoDelete(ctx context.Context, url string) error {
+	return c.RetryForError(ctx, func() error {
+		return c.doDelete(ctx, url)
 	})
 }
 
-func (fresh *Fresh) doDelete(ctx context.Context, url string) error {
+func (c *Client) doDelete(ctx context.Context, url string) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url, nil)
 	if err != nil {
 		return err
 	}
 
-	return fresh.DoCall(req, nil)
+	return c.DoCall(req, nil)
 }
 
-func (fresh *Fresh) DoDownload(ctx context.Context, url string) (buf []byte, err error) {
-	err = fresh.RetryForError(ctx, func() error {
-		buf, err = fresh.doDownload(ctx, url)
+func (c *Client) DoDownload(ctx context.Context, url string) (buf []byte, err error) {
+	err = c.RetryForError(ctx, func() error {
+		buf, err = c.doDownload(ctx, url)
 		return err
 	})
 	return
 }
 
-func (fresh *Fresh) doDownload(ctx context.Context, url string) ([]byte, error) {
+func (c *Client) doDownload(ctx context.Context, url string) ([]byte, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := fresh.authAndCall(req)
+	res, err := c.authAndCall(req)
 	if err != nil {
 		return nil, err
 	}
@@ -260,19 +260,19 @@ func (fresh *Fresh) doDownload(ctx context.Context, url string) ([]byte, error) 
 	return copyResponse(res)
 }
 
-func (fresh *Fresh) DoSaveFile(ctx context.Context, url string, path string) error {
-	return fresh.RetryForError(ctx, func() error {
-		return fresh.doSaveFile(ctx, url, path)
+func (c *Client) DoSaveFile(ctx context.Context, url string, path string) error {
+	return c.RetryForError(ctx, func() error {
+		return c.doSaveFile(ctx, url, path)
 	})
 }
 
-func (fresh *Fresh) doSaveFile(ctx context.Context, url string, path string) error {
+func (c *Client) doSaveFile(ctx context.Context, url string, path string) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return err
 	}
 
-	res, err := fresh.authAndCall(req)
+	res, err := c.authAndCall(req)
 	if err != nil {
 		return err
 	}
@@ -280,21 +280,21 @@ func (fresh *Fresh) doSaveFile(ctx context.Context, url string, path string) err
 	return saveResponse(res, path)
 }
 
-func (fresh *Fresh) DoDownloadNoAuth(ctx context.Context, url string) (buf []byte, err error) {
-	err = fresh.RetryForError(ctx, func() error {
-		buf, err = fresh.doDownloadNoAuth(ctx, url)
+func (c *Client) DoDownloadNoAuth(ctx context.Context, url string) (buf []byte, err error) {
+	err = c.RetryForError(ctx, func() error {
+		buf, err = c.doDownloadNoAuth(ctx, url)
 		return err
 	})
 	return
 }
 
-func (fresh *Fresh) doDownloadNoAuth(ctx context.Context, url string) ([]byte, error) {
+func (c *Client) doDownloadNoAuth(ctx context.Context, url string) ([]byte, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := fresh.call(req)
+	res, err := c.call(req)
 	if err != nil {
 		return nil, err
 	}
@@ -302,19 +302,19 @@ func (fresh *Fresh) doDownloadNoAuth(ctx context.Context, url string) ([]byte, e
 	return copyResponse(res)
 }
 
-func (fresh *Fresh) DoSaveFileNoAuth(ctx context.Context, url string, path string) error {
-	return fresh.RetryForError(ctx, func() error {
-		return fresh.doSaveFileNoAuth(ctx, url, path)
+func (c *Client) DoSaveFileNoAuth(ctx context.Context, url string, path string) error {
+	return c.RetryForError(ctx, func() error {
+		return c.doSaveFileNoAuth(ctx, url, path)
 	})
 }
 
-func (fresh *Fresh) doSaveFileNoAuth(ctx context.Context, url string, path string) error {
+func (c *Client) doSaveFileNoAuth(ctx context.Context, url string, path string) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return err
 	}
 
-	res, err := fresh.call(req)
+	res, err := c.call(req)
 	if err != nil {
 		return err
 	}
@@ -414,9 +414,9 @@ func saveResponse(res *http.Response, path string) error {
 	}
 
 	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, os.FileMode(0770)); err != nil {
+	if err := os.MkdirAll(dir, 0770); err != nil {
 		return err
 	}
 
-	return fsu.WriteReader(path, res.Body, fsu.FileMode(0660))
+	return fsu.WriteReader(path, res.Body, 0660)
 }

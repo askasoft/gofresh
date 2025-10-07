@@ -67,19 +67,19 @@ type FilterTicketsResult struct {
 // PerPage: 1 ~ 100, default: 30
 type ListConversationsOption = PageOption
 
-func (fd *Freshdesk) CreateTicket(ctx context.Context, ticket *TicketCreate) (*Ticket, error) {
-	url := fd.Endpoint("/tickets")
+func (c *Client) CreateTicket(ctx context.Context, ticket *TicketCreate) (*Ticket, error) {
+	url := c.Endpoint("/tickets")
 	result := &Ticket{}
-	if err := fd.DoPost(ctx, url, ticket, result); err != nil {
+	if err := c.DoPost(ctx, url, ticket, result); err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func (fd *Freshdesk) CreateOutboundEmail(ctx context.Context, ticket *OutboundEmail) (*Ticket, error) {
-	url := fd.Endpoint("/tickets/outbound_email")
+func (c *Client) CreateOutboundEmail(ctx context.Context, ticket *OutboundEmail) (*Ticket, error) {
+	url := c.Endpoint("/tickets/outbound_email")
 	result := &Ticket{}
-	if err := fd.DoPost(ctx, url, ticket, result); err != nil {
+	if err := c.DoPost(ctx, url, ticket, result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -87,15 +87,15 @@ func (fd *Freshdesk) CreateOutboundEmail(ctx context.Context, ticket *OutboundEm
 
 // GetTicket Get a Ticket
 // include: conversations, requester, company, stats
-func (fd *Freshdesk) GetTicket(ctx context.Context, tid int64, include ...string) (*Ticket, error) {
-	url := fd.Endpoint("/tickets/%d", tid)
+func (c *Client) GetTicket(ctx context.Context, tid int64, include ...string) (*Ticket, error) {
+	url := c.Endpoint("/tickets/%d", tid)
 	if len(include) > 0 {
 		s := strings.Join(include, ",")
 		url += "?include=" + s
 	}
 
 	ticket := &Ticket{}
-	err := fd.DoGet(ctx, url, ticket)
+	err := c.DoGet(ctx, url, ticket)
 	return ticket, err
 }
 
@@ -108,14 +108,14 @@ func (fd *Freshdesk) GetTicket(ctx context.Context, tid int64, include ...string
 // 3. When using filters, the query string must be URL encoded - see example
 // 4. Use 'include' to embed additional details in the response. Each include will consume an additional 2 credits. For example if you embed the stats information you will be charged a total of 3 API credits for the call.
 // 5. For accounts created after 2018-11-30, you will have to use include to get description.
-func (fd *Freshdesk) ListTickets(ctx context.Context, lto *ListTicketsOption) ([]*Ticket, bool, error) {
-	url := fd.Endpoint("/tickets")
+func (c *Client) ListTickets(ctx context.Context, lto *ListTicketsOption) ([]*Ticket, bool, error) {
+	url := c.Endpoint("/tickets")
 	tickets := []*Ticket{}
-	next, err := fd.DoList(ctx, url, lto, &tickets)
+	next, err := c.DoList(ctx, url, lto, &tickets)
 	return tickets, next, err
 }
 
-func (fd *Freshdesk) IterTickets(ctx context.Context, lto *ListTicketsOption, itf func(*Ticket) error) error {
+func (c *Client) IterTickets(ctx context.Context, lto *ListTicketsOption, itf func(*Ticket) error) error {
 	if lto == nil {
 		lto = &ListTicketsOption{}
 	}
@@ -127,7 +127,7 @@ func (fd *Freshdesk) IterTickets(ctx context.Context, lto *ListTicketsOption, it
 	}
 
 	for {
-		tickets, next, err := fd.ListTickets(ctx, lto)
+		tickets, next, err := c.ListTickets(ctx, lto)
 		if err != nil {
 			return err
 		}
@@ -159,14 +159,14 @@ func (fd *Freshdesk) IterTickets(ctx context.Context, lto *ListTicketsOption, it
 // 9. To scroll through the pages add page parameter to the url. The page number starts with 1 and should not exceed 10
 // 10. To filter for fields with no values assigned, use the null keyword
 // 11. Please note that the updates will take a few minutes to get indexed, after which it will be available through API
-func (fd *Freshdesk) FilterTickets(ctx context.Context, fto *FilterTicketsOption) ([]*Ticket, int, error) {
-	url := fd.Endpoint("/search/tickets")
+func (c *Client) FilterTickets(ctx context.Context, fto *FilterTicketsOption) ([]*Ticket, int, error) {
+	url := c.Endpoint("/search/tickets")
 	ftr := &FilterTicketsResult{}
-	_, err := fd.DoList(ctx, url, fto, ftr)
+	_, err := c.DoList(ctx, url, fto, ftr)
 	return ftr.Results, ftr.Total, err
 }
 
-func (fd *Freshdesk) IterFilterTickets(ctx context.Context, fto *FilterTicketsOption, itf func(*Ticket) error) error {
+func (c *Client) IterFilterTickets(ctx context.Context, fto *FilterTicketsOption, itf func(*Ticket) error) error {
 	if fto == nil {
 		fto = &FilterTicketsOption{}
 	}
@@ -175,7 +175,7 @@ func (fd *Freshdesk) IterFilterTickets(ctx context.Context, fto *FilterTicketsOp
 	}
 
 	for {
-		tickets, total, err := fd.FilterTickets(ctx, fto)
+		tickets, total, err := c.FilterTickets(ctx, fto)
 		if err != nil {
 			return err
 		}
@@ -192,18 +192,18 @@ func (fd *Freshdesk) IterFilterTickets(ctx context.Context, fto *FilterTicketsOp
 	return nil
 }
 
-func (fd *Freshdesk) UpdateTicket(ctx context.Context, tid int64, ticket *TicketUpdate) (*Ticket, error) {
-	url := fd.Endpoint("/tickets/%d", tid)
+func (c *Client) UpdateTicket(ctx context.Context, tid int64, ticket *TicketUpdate) (*Ticket, error) {
+	url := c.Endpoint("/tickets/%d", tid)
 	result := &Ticket{}
-	if err := fd.DoPut(ctx, url, ticket, result); err != nil {
+	if err := c.DoPut(ctx, url, ticket, result); err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
 // BulkUpdateTickets returns job id
-func (fd *Freshdesk) BulkUpdateTickets(ctx context.Context, tids []int64, properties *TicketProperties) (string, error) {
-	url := fd.Endpoint("/tickets/bulk_update")
+func (c *Client) BulkUpdateTickets(ctx context.Context, tids []int64, properties *TicketProperties) (string, error) {
+	url := c.Endpoint("/tickets/bulk_update")
 	data := map[string]any{
 		"bulk_action": map[string]any{
 			"ids":        tids,
@@ -211,14 +211,14 @@ func (fd *Freshdesk) BulkUpdateTickets(ctx context.Context, tids []int64, proper
 		},
 	}
 	result := map[string]string{}
-	err := fd.DoPut(ctx, url, data, &result)
+	err := c.DoPut(ctx, url, data, &result)
 	return result["job_id"], err
 }
 
-func (fd *Freshdesk) ForwardTicket(ctx context.Context, tid int64, tf *TicketForward) (*ForwardResult, error) {
-	url := fd.Endpoint("/tickets/%d/forward", tid)
+func (c *Client) ForwardTicket(ctx context.Context, tid int64, tf *TicketForward) (*ForwardResult, error) {
+	url := c.Endpoint("/tickets/%d/forward", tid)
 	result := &ForwardResult{}
-	if err := fd.DoPost(ctx, url, tf, result); err != nil {
+	if err := c.DoPost(ctx, url, tf, result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -228,83 +228,83 @@ func (fd *Freshdesk) ForwardTicket(ctx context.Context, tid int64, tf *TicketFor
 // Sometimes, a customer might try to get your attention regarding a particular issue by contacting you through separate channels.
 // Sometimes, the same issue might be reported by different people in the team or someone might accidentally open a new ticket instead of following up on an existing one.
 // To avoid conflicts, you can merge all related tickets together and keep the communication streamlined.
-func (fd *Freshdesk) MergeTickets(ctx context.Context, tm *TicketsMerge) error {
-	url := fd.Endpoint("/tickets/merge")
-	err := fd.DoPut(ctx, url, tm, nil)
+func (c *Client) MergeTickets(ctx context.Context, tm *TicketsMerge) error {
+	url := c.Endpoint("/tickets/merge")
+	err := c.DoPut(ctx, url, tm, nil)
 	return err
 }
 
-func (fd *Freshdesk) ListTicketWatchers(ctx context.Context, tid int64) ([]int64, error) {
-	url := fd.Endpoint("/tickets/%d/watchers", tid)
+func (c *Client) ListTicketWatchers(ctx context.Context, tid int64) ([]int64, error) {
+	url := c.Endpoint("/tickets/%d/watchers", tid)
 	result := &TicketWatchers{}
-	err := fd.DoGet(ctx, url, result)
+	err := c.DoGet(ctx, url, result)
 	return result.WatcherIDs, err
 }
 
-func (fd *Freshdesk) AddTicketWatcher(ctx context.Context, tid, uid int64) error {
-	url := fd.Endpoint("/tickets/%d/watchers", tid)
+func (c *Client) AddTicketWatcher(ctx context.Context, tid, uid int64) error {
+	url := c.Endpoint("/tickets/%d/watchers", tid)
 	data := map[string]any{
 		"user_id": uid,
 	}
-	return fd.DoPost(ctx, url, data, nil)
+	return c.DoPost(ctx, url, data, nil)
 }
 
-func (fd *Freshdesk) UnwatchTicket(ctx context.Context, tid int64) error {
-	url := fd.Endpoint("/tickets/%d/unwatch", tid)
-	return fd.DoPut(ctx, url, nil, nil)
+func (c *Client) UnwatchTicket(ctx context.Context, tid int64) error {
+	url := c.Endpoint("/tickets/%d/unwatch", tid)
+	return c.DoPut(ctx, url, nil, nil)
 }
 
-func (fd *Freshdesk) BulkWatchTickets(ctx context.Context, tids []int64, uid int64) error {
-	url := fd.Endpoint("/tickets/buld_watch")
-	data := map[string]any{
-		"ids":     tids,
-		"user_id": uid,
-	}
-	return fd.DoPut(ctx, url, data, nil)
-}
-
-func (fd *Freshdesk) BulkUnwatchTickets(ctx context.Context, tids []int64, uid int64) error {
-	url := fd.Endpoint("/tickets/buld_unwatch")
+func (c *Client) BulkWatchTickets(ctx context.Context, tids []int64, uid int64) error {
+	url := c.Endpoint("/tickets/buld_watch")
 	data := map[string]any{
 		"ids":     tids,
 		"user_id": uid,
 	}
-	return fd.DoPut(ctx, url, data, nil)
+	return c.DoPut(ctx, url, data, nil)
 }
 
-func (fd *Freshdesk) RestoreTicket(ctx context.Context, tid int64) error {
-	url := fd.Endpoint("/tickets/%d/restore", tid)
-	return fd.DoPut(ctx, url, nil, nil)
+func (c *Client) BulkUnwatchTickets(ctx context.Context, tids []int64, uid int64) error {
+	url := c.Endpoint("/tickets/buld_unwatch")
+	data := map[string]any{
+		"ids":     tids,
+		"user_id": uid,
+	}
+	return c.DoPut(ctx, url, data, nil)
 }
 
-func (fd *Freshdesk) DeleteTicket(ctx context.Context, tid int64) error {
-	url := fd.Endpoint("/tickets/%d", tid)
-	return fd.DoDelete(ctx, url)
+func (c *Client) RestoreTicket(ctx context.Context, tid int64) error {
+	url := c.Endpoint("/tickets/%d/restore", tid)
+	return c.DoPut(ctx, url, nil, nil)
 }
 
-func (fd *Freshdesk) BulkDeleteTickets(ctx context.Context, tids []int64) (string, error) {
-	url := fd.Endpoint("/tickets/bulk_delete")
+func (c *Client) DeleteTicket(ctx context.Context, tid int64) error {
+	url := c.Endpoint("/tickets/%d", tid)
+	return c.DoDelete(ctx, url)
+}
+
+func (c *Client) BulkDeleteTickets(ctx context.Context, tids []int64) (string, error) {
+	url := c.Endpoint("/tickets/bulk_delete")
 	data := map[string]any{
 		"bulk_action": map[string]any{
 			"ids": tids,
 		},
 	}
 	result := map[string]string{}
-	err := fd.DoPut(ctx, url, data, &result)
+	err := c.DoPut(ctx, url, data, &result)
 	return result["job_id"], err
 }
 
 // ---------------------------------------------------
 // Conversation
 
-func (fd *Freshdesk) ListTicketConversations(ctx context.Context, tid int64, lco *ListConversationsOption) ([]*Conversation, bool, error) {
-	url := fd.Endpoint("/tickets/%d/conversations", tid)
+func (c *Client) ListTicketConversations(ctx context.Context, tid int64, lco *ListConversationsOption) ([]*Conversation, bool, error) {
+	url := c.Endpoint("/tickets/%d/conversations", tid)
 	conversations := []*Conversation{}
-	next, err := fd.DoList(ctx, url, lco, &conversations)
+	next, err := c.DoList(ctx, url, lco, &conversations)
 	return conversations, next, err
 }
 
-func (fd *Freshdesk) IterTicketConversations(ctx context.Context, tid int64, lco *ListConversationsOption, icf func(*Conversation) error) error {
+func (c *Client) IterTicketConversations(ctx context.Context, tid int64, lco *ListConversationsOption, icf func(*Conversation) error) error {
 	if lco == nil {
 		lco = &ListConversationsOption{}
 	}
@@ -316,7 +316,7 @@ func (fd *Freshdesk) IterTicketConversations(ctx context.Context, tid int64, lco
 	}
 
 	for {
-		conversations, next, err := fd.ListTicketConversations(ctx, tid, lco)
+		conversations, next, err := c.ListTicketConversations(ctx, tid, lco)
 		if err != nil {
 			return err
 		}
@@ -333,43 +333,43 @@ func (fd *Freshdesk) IterTicketConversations(ctx context.Context, tid int64, lco
 	return nil
 }
 
-func (fd *Freshdesk) CreateReply(ctx context.Context, tid int64, reply *ReplyCreate) (*Reply, error) {
-	url := fd.Endpoint("/tickets/%d/reply", tid)
+func (c *Client) CreateReply(ctx context.Context, tid int64, reply *ReplyCreate) (*Reply, error) {
+	url := c.Endpoint("/tickets/%d/reply", tid)
 	result := &Reply{}
-	if err := fd.DoPost(ctx, url, reply, result); err != nil {
+	if err := c.DoPost(ctx, url, reply, result); err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func (fd *Freshdesk) CreateNote(ctx context.Context, tid int64, note *NoteCreate) (*Note, error) {
-	url := fd.Endpoint("/tickets/%d/notes", tid)
+func (c *Client) CreateNote(ctx context.Context, tid int64, note *NoteCreate) (*Note, error) {
+	url := c.Endpoint("/tickets/%d/notes", tid)
 	result := &Note{}
-	if err := fd.DoPost(ctx, url, note, result); err != nil {
+	if err := c.DoPost(ctx, url, note, result); err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
 // UpdateConversation only public & private notes can be edited.
-func (fd *Freshdesk) UpdateConversation(ctx context.Context, cid int64, note *NoteUpdate) (*Conversation, error) {
-	url := fd.Endpoint("/conversations/%d", cid)
+func (c *Client) UpdateConversation(ctx context.Context, cid int64, note *NoteUpdate) (*Conversation, error) {
+	url := c.Endpoint("/conversations/%d", cid)
 	result := &Conversation{}
-	if err := fd.DoPut(ctx, url, note, result); err != nil {
+	if err := c.DoPut(ctx, url, note, result); err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
 // DeleteConversation delete a conversation (Incoming Reply can not be deleted)
-func (fd *Freshdesk) DeleteConversation(ctx context.Context, cid int64) error {
-	url := fd.Endpoint("/conversations/%d", cid)
-	return fd.DoDelete(ctx, url)
+func (c *Client) DeleteConversation(ctx context.Context, cid int64) error {
+	url := c.Endpoint("/conversations/%d", cid)
+	return c.DoDelete(ctx, url)
 }
 
-func (fd *Freshdesk) ReplyToForward(ctx context.Context, tid int64, rf *ReplyForward) (*ForwardResult, error) {
-	url := fd.Endpoint("/tickets/%d/reply_to_forward", tid)
+func (c *Client) ReplyToForward(ctx context.Context, tid int64, rf *ReplyForward) (*ForwardResult, error) {
+	url := c.Endpoint("/tickets/%d/reply_to_forward", tid)
 	result := &ForwardResult{}
-	err := fd.DoPost(ctx, url, rf, result)
+	err := c.DoPost(ctx, url, rf, result)
 	return result, err
 }

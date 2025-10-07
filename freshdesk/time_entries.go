@@ -39,24 +39,24 @@ func (lteo *ListTimeEntriesOption) Values() Values {
 	return q
 }
 
-func (fd *Freshdesk) CreateTimeEntry(ctx context.Context, tid int64, te *TimeEntryCreate) (*TimeEntry, error) {
-	url := fd.Endpoint("/tickets/%d/time_entries", tid)
+func (c *Client) CreateTimeEntry(ctx context.Context, tid int64, te *TimeEntryCreate) (*TimeEntry, error) {
+	url := c.Endpoint("/tickets/%d/time_entries", tid)
 	result := &TimeEntry{}
-	if err := fd.DoPost(ctx, url, te, result); err != nil {
+	if err := c.DoPost(ctx, url, te, result); err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
 // List All Time Entries
-func (fd *Freshdesk) ListTimeEntries(ctx context.Context, lteo *ListTimeEntriesOption) ([]*TimeEntry, bool, error) {
-	url := fd.Endpoint("/time_entries")
+func (c *Client) ListTimeEntries(ctx context.Context, lteo *ListTimeEntriesOption) ([]*TimeEntry, bool, error) {
+	url := c.Endpoint("/time_entries")
 	tes := []*TimeEntry{}
-	next, err := fd.DoList(ctx, url, lteo, &tes)
+	next, err := c.DoList(ctx, url, lteo, &tes)
 	return tes, next, err
 }
 
-func (fd *Freshdesk) IterTimeEntries(ctx context.Context, lteo *ListTimeEntriesOption, itef func(*TimeEntry) error) error {
+func (c *Client) IterTimeEntries(ctx context.Context, lteo *ListTimeEntriesOption, itef func(*TimeEntry) error) error {
 	if lteo == nil {
 		lteo = &ListTimeEntriesOption{}
 	}
@@ -68,7 +68,7 @@ func (fd *Freshdesk) IterTimeEntries(ctx context.Context, lteo *ListTimeEntriesO
 	}
 
 	for {
-		tes, next, err := fd.ListTimeEntries(ctx, lteo)
+		tes, next, err := c.ListTimeEntries(ctx, lteo)
 		if err != nil {
 			return err
 		}
@@ -93,10 +93,10 @@ func (fd *Freshdesk) IterTimeEntries(ctx context.Context, lteo *ListTimeEntriesO
 // 3. The start_time cannot be greater than the current time
 // 4. The timer_running attribute cannot be set to the same value as before
 // 5. The agent_id cannot be updated if the timer is already running
-func (fd *Freshdesk) UpdateTimeEntry(ctx context.Context, teid int64, te *TimeEntryUpdate) (*TimeEntry, error) {
-	url := fd.Endpoint("/time_entries/%d", teid)
+func (c *Client) UpdateTimeEntry(ctx context.Context, teid int64, te *TimeEntryUpdate) (*TimeEntry, error) {
+	url := c.Endpoint("/time_entries/%d", teid)
 	result := &TimeEntry{}
-	if err := fd.DoPut(ctx, url, te, result); err != nil {
+	if err := c.DoPut(ctx, url, te, result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -104,16 +104,16 @@ func (fd *Freshdesk) UpdateTimeEntry(ctx context.Context, teid int64, te *TimeEn
 
 // Start/Stop Timer
 // PUT  /api/v2/time_entries/[time_entry_id]/toggle_timer
-func (fd *Freshdesk) ToggleTimer(ctx context.Context, teid int64) (*TimeEntry, error) {
-	url := fd.Endpoint("/time_entries/%d/toggle_timer", teid)
+func (c *Client) ToggleTimer(ctx context.Context, teid int64) (*TimeEntry, error) {
+	url := c.Endpoint("/time_entries/%d/toggle_timer", teid)
 	result := &TimeEntry{}
-	if err := fd.DoPut(ctx, url, nil, result); err != nil {
+	if err := c.DoPut(ctx, url, nil, result); err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func (fd *Freshdesk) DeleteTimeEntry(ctx context.Context, teid int64) error {
-	url := fd.Endpoint("/time_entries/%d", teid)
-	return fd.DoDelete(ctx, url)
+func (c *Client) DeleteTimeEntry(ctx context.Context, teid int64) error {
+	url := c.Endpoint("/time_entries/%d", teid)
+	return c.DoDelete(ctx, url)
 }

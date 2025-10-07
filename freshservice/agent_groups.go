@@ -7,30 +7,30 @@ import "context"
 
 type ListAgentGroupsOption = PageOption
 
-func (fs *Freshservice) CreateAgentGroup(ctx context.Context, ag *AgentGroupCreate) (*AgentGroup, error) {
-	url := fs.Endpoint("/groups")
+func (c *Client) CreateAgentGroup(ctx context.Context, ag *AgentGroupCreate) (*AgentGroup, error) {
+	url := c.Endpoint("/groups")
 	result := &agentGroupResult{}
-	if err := fs.DoPost(ctx, url, ag, result); err != nil {
+	if err := c.DoPost(ctx, url, ag, result); err != nil {
 		return nil, err
 	}
 	return result.Group, nil
 }
 
-func (fs *Freshservice) GetAgentGroup(ctx context.Context, id int64) (*AgentGroup, error) {
-	url := fs.Endpoint("/groups/%d", id)
+func (c *Client) GetAgentGroup(ctx context.Context, id int64) (*AgentGroup, error) {
+	url := c.Endpoint("/groups/%d", id)
 	result := &agentGroupResult{}
-	err := fs.DoGet(ctx, url, result)
+	err := c.DoGet(ctx, url, result)
 	return result.Group, err
 }
 
-func (fs *Freshservice) ListAgentGroups(ctx context.Context, lago *ListAgentGroupsOption) ([]*AgentGroup, bool, error) {
-	url := fs.Endpoint("/groups")
+func (c *Client) ListAgentGroups(ctx context.Context, lago *ListAgentGroupsOption) ([]*AgentGroup, bool, error) {
+	url := c.Endpoint("/groups")
 	result := &agentGroupsResult{}
-	next, err := fs.DoList(ctx, url, lago, result)
+	next, err := c.DoList(ctx, url, lago, result)
 	return result.Groups, next, err
 }
 
-func (fs *Freshservice) IterAgentGroups(ctx context.Context, lago *ListAgentGroupsOption, iagf func(*AgentGroup) error) error {
+func (c *Client) IterAgentGroups(ctx context.Context, lago *ListAgentGroupsOption, iagf func(*AgentGroup) error) error {
 	if lago == nil {
 		lago = &ListAgentRolesOption{}
 	}
@@ -42,7 +42,7 @@ func (fs *Freshservice) IterAgentGroups(ctx context.Context, lago *ListAgentGrou
 	}
 
 	for {
-		ags, next, err := fs.ListAgentGroups(ctx, lago)
+		ags, next, err := c.ListAgentGroups(ctx, lago)
 		if err != nil {
 			return err
 		}
@@ -59,16 +59,16 @@ func (fs *Freshservice) IterAgentGroups(ctx context.Context, lago *ListAgentGrou
 	return nil
 }
 
-func (fs *Freshservice) UpdateAgentGroup(ctx context.Context, id int64, ag *AgentGroupUpdate) (*AgentGroup, error) {
-	url := fs.Endpoint("/groups/%d", id)
+func (c *Client) UpdateAgentGroup(ctx context.Context, id int64, ag *AgentGroupUpdate) (*AgentGroup, error) {
+	url := c.Endpoint("/groups/%d", id)
 	result := &agentGroupResult{}
-	if err := fs.DoPut(ctx, url, ag, result); err != nil {
+	if err := c.DoPut(ctx, url, ag, result); err != nil {
 		return nil, err
 	}
 	return result.Group, nil
 }
 
-func (fs *Freshservice) DeleteAgentGroup(ctx context.Context, id int64) error {
-	url := fs.Endpoint("/groups/%d", id)
-	return fs.DoDelete(ctx, url)
+func (c *Client) DeleteAgentGroup(ctx context.Context, id int64) error {
+	url := c.Endpoint("/groups/%d", id)
+	return c.DoDelete(ctx, url)
 }

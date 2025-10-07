@@ -10,30 +10,30 @@ import (
 
 type ListCompaniesOption = PageOption
 
-func (fd *Freshdesk) CreateCompany(ctx context.Context, company *CompanyCreate) (*Company, error) {
-	url := fd.Endpoint("/companies")
+func (c *Client) CreateCompany(ctx context.Context, company *CompanyCreate) (*Company, error) {
+	url := c.Endpoint("/companies")
 	result := &Company{}
-	if err := fd.DoPost(ctx, url, company, result); err != nil {
+	if err := c.DoPost(ctx, url, company, result); err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func (fd *Freshdesk) GetCompany(ctx context.Context, cid int64) (*Company, error) {
-	url := fd.Endpoint("/companies/%d", cid)
+func (c *Client) GetCompany(ctx context.Context, cid int64) (*Company, error) {
+	url := c.Endpoint("/companies/%d", cid)
 	result := &Company{}
-	err := fd.DoGet(ctx, url, result)
+	err := c.DoGet(ctx, url, result)
 	return result, err
 }
 
-func (fd *Freshdesk) ListCompanies(ctx context.Context, lco *ListCompaniesOption) ([]*Company, bool, error) {
-	url := fd.Endpoint("/companies")
+func (c *Client) ListCompanies(ctx context.Context, lco *ListCompaniesOption) ([]*Company, bool, error) {
+	url := c.Endpoint("/companies")
 	result := []*Company{}
-	next, err := fd.DoList(ctx, url, lco, &result)
+	next, err := c.DoList(ctx, url, lco, &result)
 	return result, next, err
 }
 
-func (fd *Freshdesk) IterCompanies(ctx context.Context, lco *ListCompaniesOption, icf func(*Company) error) error {
+func (c *Client) IterCompanies(ctx context.Context, lco *ListCompaniesOption, icf func(*Company) error) error {
 	if lco == nil {
 		lco = &ListCompaniesOption{}
 	}
@@ -45,7 +45,7 @@ func (fd *Freshdesk) IterCompanies(ctx context.Context, lco *ListCompaniesOption
 	}
 
 	for {
-		companies, next, err := fd.ListCompanies(ctx, lco)
+		companies, next, err := c.ListCompanies(ctx, lco)
 		if err != nil {
 			return err
 		}
@@ -67,30 +67,30 @@ func (fd *Freshdesk) IterCompanies(ctx context.Context, lco *ListCompaniesOption
 // Note:
 // 1. The search is case insensitive.
 // 2. You cannot search with a substring. For example, a company "Acme Corporation" can be looked up using "acme", "Ac", "Corporation" and "Co". But it will not be returned when you search for "cme" or "orporation".
-func (fd *Freshdesk) SearchCompanies(ctx context.Context, name string) ([]*Company, error) {
-	url := fd.Endpoint("/companies/autocomplete?name=%s", url.QueryEscape(name))
+func (c *Client) SearchCompanies(ctx context.Context, name string) ([]*Company, error) {
+	url := c.Endpoint("/companies/autocomplete?name=%s", url.QueryEscape(name))
 	result := &companyResult{}
-	err := fd.DoGet(ctx, url, result)
+	err := c.DoGet(ctx, url, result)
 	return result.Companies, err
 }
 
-func (fd *Freshdesk) UpdateCompany(ctx context.Context, cid int64, company *CompanyUpdate) (*Company, error) {
-	url := fd.Endpoint("/companies/%d", cid)
+func (c *Client) UpdateCompany(ctx context.Context, cid int64, company *CompanyUpdate) (*Company, error) {
+	url := c.Endpoint("/companies/%d", cid)
 	result := &Company{}
-	if err := fd.DoPut(ctx, url, company, result); err != nil {
+	if err := c.DoPut(ctx, url, company, result); err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func (fd *Freshdesk) DeleteCompany(ctx context.Context, cid int64) error {
-	url := fd.Endpoint("/companies/%d", cid)
-	return fd.DoDelete(ctx, url)
+func (c *Client) DeleteCompany(ctx context.Context, cid int64) error {
+	url := c.Endpoint("/companies/%d", cid)
+	return c.DoDelete(ctx, url)
 }
 
 // ExportCompanies return a job id, call GetExportedCompaniesURL() to get the job detail
-func (fd *Freshdesk) ExportCompanies(ctx context.Context, defaultFields, customFields []string) (string, error) {
-	url := fd.Endpoint("/companies/export")
+func (c *Client) ExportCompanies(ctx context.Context, defaultFields, customFields []string) (string, error) {
+	url := c.Endpoint("/companies/export")
 	opt := &ExportOption{
 		Fields: &ExportFields{
 			DefaultFields: defaultFields,
@@ -98,14 +98,14 @@ func (fd *Freshdesk) ExportCompanies(ctx context.Context, defaultFields, customF
 		},
 	}
 	job := &Job{}
-	err := fd.DoPost(ctx, url, opt, &job)
+	err := c.DoPost(ctx, url, opt, &job)
 	return job.ID, err
 }
 
 // GetExportedCompaniesURL get the exported companies url
-func (fd *Freshdesk) GetExportedCompaniesURL(ctx context.Context, jid string) (*Job, error) {
-	url := fd.Endpoint("/companies/export/%s", jid)
+func (c *Client) GetExportedCompaniesURL(ctx context.Context, jid string) (*Job, error) {
+	url := c.Endpoint("/companies/export/%s", jid)
 	job := &Job{}
-	err := fd.DoGet(ctx, url, job)
+	err := c.DoGet(ctx, url, job)
 	return job, err
 }

@@ -67,71 +67,74 @@ func toString(o any) string {
 	return jsonx.Prettify(o)
 }
 
-type Freshservice fresh.Fresh
+// alias for Client
+type Freshservice = Client
 
-func (fs *Freshservice) Endpoint(format string, a ...any) string {
-	return (*fresh.Fresh)(fs).Endpoint(format, a...)
+type Client fresh.Client
+
+func (c *Client) Endpoint(format string, a ...any) string {
+	return (*fresh.Client)(c).Endpoint(format, a...)
 }
 
-func (fs *Freshservice) DoGet(ctx context.Context, url string, result any) error {
-	return (*fresh.Fresh)(fs).DoGet(ctx, url, result)
+func (c *Client) DoGet(ctx context.Context, url string, result any) error {
+	return (*fresh.Client)(c).DoGet(ctx, url, result)
 }
 
-func (fs *Freshservice) DoList(ctx context.Context, url string, lo ListOption, result any) (bool, error) {
-	return (*fresh.Fresh)(fs).DoList(ctx, url, lo, result)
+func (c *Client) DoList(ctx context.Context, url string, lo ListOption, result any) (bool, error) {
+	return (*fresh.Client)(c).DoList(ctx, url, lo, result)
 }
 
-func (fs *Freshservice) DoPost(ctx context.Context, url string, source, result any) error {
-	return (*fresh.Fresh)(fs).DoPost(ctx, url, source, result)
+func (c *Client) DoPost(ctx context.Context, url string, source, result any) error {
+	return (*fresh.Client)(c).DoPost(ctx, url, source, result)
 }
 
-func (fs *Freshservice) DoPut(ctx context.Context, url string, source, result any) error {
-	return (*fresh.Fresh)(fs).DoPut(ctx, url, source, result)
+func (c *Client) DoPut(ctx context.Context, url string, source, result any) error {
+	return (*fresh.Client)(c).DoPut(ctx, url, source, result)
 }
 
-func (fs *Freshservice) DoDelete(ctx context.Context, url string) error {
-	return (*fresh.Fresh)(fs).DoDelete(ctx, url)
+func (c *Client) DoDelete(ctx context.Context, url string) error {
+	return (*fresh.Client)(c).DoDelete(ctx, url)
 }
 
-func (fs *Freshservice) Download(ctx context.Context, url string) ([]byte, error) {
-	return (*fresh.Fresh)(fs).DoDownload(ctx, url)
+func (c *Client) Download(ctx context.Context, url string) ([]byte, error) {
+	return (*fresh.Client)(c).DoDownload(ctx, url)
 }
 
-func (fs *Freshservice) SaveFile(ctx context.Context, url string, path string) error {
-	return (*fresh.Fresh)(fs).DoSaveFile(ctx, url, path)
+func (c *Client) SaveFile(ctx context.Context, url string, path string) error {
+	return (*fresh.Client)(c).DoSaveFile(ctx, url, path)
 }
 
-func (fs *Freshservice) DownloadNoAuth(ctx context.Context, url string) ([]byte, error) {
-	return (*fresh.Fresh)(fs).DoDownloadNoAuth(ctx, url)
+func (c *Client) DownloadNoAuth(ctx context.Context, url string) ([]byte, error) {
+	return (*fresh.Client)(c).DoDownloadNoAuth(ctx, url)
 }
 
-func (fs *Freshservice) SaveFileNoAuth(ctx context.Context, url string, path string) error {
-	return (*fresh.Fresh)(fs).DoSaveFileNoAuth(ctx, url, path)
+func (c *Client) SaveFileNoAuth(ctx context.Context, url string, path string) error {
+	return (*fresh.Client)(c).DoSaveFileNoAuth(ctx, url, path)
 }
 
-func (fs *Freshservice) DownloadAttachment(ctx context.Context, aid int64) ([]byte, error) {
-	url := fs.Endpoint("/attachments/%d", aid)
-	return fs.Download(ctx, url)
+func (c *Client) DownloadAttachment(ctx context.Context, aid int64) ([]byte, error) {
+	url := c.Endpoint("/attachments/%d", aid)
+	return c.Download(ctx, url)
 }
 
-func (fs *Freshservice) SaveAttachment(ctx context.Context, aid int64, path string) error {
-	url := fs.Endpoint("/attachments/%d", aid)
-	return fs.SaveFile(ctx, url, path)
+func (c *Client) SaveAttachment(ctx context.Context, aid int64, path string) error {
+	url := c.Endpoint("/attachments/%d", aid)
+	return c.SaveFile(ctx, url, path)
 }
 
 // GetAgentTicketURL return a permlink for agent ticket URL
-func (fs *Freshservice) GetAgentTicketURL(tid int64) string {
-	return GetAgentTicketURL(fs.Domain, tid)
+func (c *Client) GetAgentTicketURL(tid int64) string {
+	return GetAgentTicketURL(c.Domain, tid)
 }
 
 // GetSolutionArticleURL return a permlink for solution article URL
-func (fs *Freshservice) GetSolutionArticleURL(aid int64) string {
-	return GetSolutionArticleURL(fs.Domain, aid)
+func (c *Client) GetSolutionArticleURL(aid int64) string {
+	return GetSolutionArticleURL(c.Domain, aid)
 }
 
 // GetHelpdeskAttachmentURL return a permlink for helpdesk attachment/avator URL
-func (fs *Freshservice) GetHelpdeskAttachmentURL(aid int64) string {
-	return GetHelpdeskAttachmentURL(fs.Domain, aid)
+func (c *Client) GetHelpdeskAttachmentURL(aid int64) string {
+	return GetHelpdeskAttachmentURL(c.Domain, aid)
 }
 
 // GetAgentTicketURL return a permlink for agent ticket URL
