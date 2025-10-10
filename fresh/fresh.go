@@ -238,15 +238,35 @@ func (c *Client) doDelete(ctx context.Context, url string) error {
 	return c.DoCall(req, nil)
 }
 
-func (c *Client) DoDownload(ctx context.Context, url string) (buf []byte, err error) {
+func (c *Client) DoCopyFile(ctx context.Context, url string, w io.Writer) error {
+	return c.RetryForError(ctx, func() error {
+		return c.doCopyFile(ctx, url, w)
+	})
+}
+
+func (c *Client) doCopyFile(ctx context.Context, url string, w io.Writer) error {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return err
+	}
+
+	res, err := c.authAndCall(req)
+	if err != nil {
+		return err
+	}
+
+	return copyResponse(res, w)
+}
+
+func (c *Client) DoReadFile(ctx context.Context, url string) (buf []byte, err error) {
 	err = c.RetryForError(ctx, func() error {
-		buf, err = c.doDownload(ctx, url)
+		buf, err = c.doReadFile(ctx, url)
 		return err
 	})
 	return
 }
 
-func (c *Client) doDownload(ctx context.Context, url string) ([]byte, error) {
+func (c *Client) doReadFile(ctx context.Context, url string) ([]byte, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
@@ -257,7 +277,7 @@ func (c *Client) doDownload(ctx context.Context, url string) ([]byte, error) {
 		return nil, err
 	}
 
-	return copyResponse(res)
+	return readResponse(res)
 }
 
 func (c *Client) DoSaveFile(ctx context.Context, url string, path string) error {
@@ -280,15 +300,35 @@ func (c *Client) doSaveFile(ctx context.Context, url string, path string) error 
 	return saveResponse(res, path)
 }
 
-func (c *Client) DoDownloadNoAuth(ctx context.Context, url string) (buf []byte, err error) {
+func (c *Client) DoCopyFileNoAuth(ctx context.Context, url string, w io.Writer) error {
+	return c.RetryForError(ctx, func() error {
+		return c.doCopyFileNoAuth(ctx, url, w)
+	})
+}
+
+func (c *Client) doCopyFileNoAuth(ctx context.Context, url string, w io.Writer) error {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return err
+	}
+
+	res, err := c.call(req)
+	if err != nil {
+		return err
+	}
+
+	return copyResponse(res, w)
+}
+
+func (c *Client) DoReadFileNoAuth(ctx context.Context, url string) (buf []byte, err error) {
 	err = c.RetryForError(ctx, func() error {
-		buf, err = c.doDownloadNoAuth(ctx, url)
+		buf, err = c.doReadFileNoAuth(ctx, url)
 		return err
 	})
 	return
 }
 
-func (c *Client) doDownloadNoAuth(ctx context.Context, url string) ([]byte, error) {
+func (c *Client) doReadFileNoAuth(ctx context.Context, url string) ([]byte, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
@@ -299,7 +339,7 @@ func (c *Client) doDownloadNoAuth(ctx context.Context, url string) ([]byte, erro
 		return nil, err
 	}
 
-	return copyResponse(res)
+	return readResponse(res)
 }
 
 func (c *Client) DoSaveFileNoAuth(ctx context.Context, url string, path string) error {
@@ -394,16 +434,25 @@ func BuildJSONRequest(a any) (io.Reader, string, error) {
 	return buf, contentTypeJSON, nil
 }
 
-func copyResponse(res *http.Response) ([]byte, error) {
+func copyResponse(res *http.Response, w io.Writer) error {
+	defer iox.DrainAndClose(res.Body)
+
+	if res.StatusCode != http.StatusOK {
+		return newResultError(res)
+	}
+
+	_, err := io.Copy(w, res.Body)
+	return err
+}
+
+func readResponse(res *http.Response) ([]byte, error) {
 	defer iox.DrainAndClose(res.Body)
 
 	if res.StatusCode != http.StatusOK {
 		return nil, newResultError(res)
 	}
 
-	buf := &bytes.Buffer{}
-	_, err := iox.Copy(buf, res.Body)
-	return buf.Bytes(), err
+	return io.ReadAll(res.Body)
 }
 
 func saveResponse(res *http.Response, path string) error {

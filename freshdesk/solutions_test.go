@@ -103,13 +103,22 @@ func TestSolutionAPIs(t *testing.T) {
 		t.Fatalf("ERROR: %v", err)
 	}
 
-	uad, err := fd.DownloadNoAuth(ctxbg, ua.Attachments[0].AttachmentURL)
+	uad, err := fd.DoReadFileNoAuth(ctxbg, ua.Attachments[0].AttachmentURL)
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
 	if !bye.Equal(aad, uad) {
 		t.Fatal("Attachment content not equal")
 	}
+
+	// unsupported by Freshdesk API
+	// uad, err = fd.ReadAttachment(ctxbg, ua.Attachments[0].ID)
+	// if err != nil {
+	// 	t.Fatalf("ERROR: %v", err)
+	// }
+	// if !bye.Equal(aad, uad) {
+	// 	t.Fatal("Attachment content not equal")
+	// }
 
 	au2 := &ArticleUpdate{}
 	au2.AddAttachment("./article.go")

@@ -93,7 +93,7 @@ func TestTicketAPIs(t *testing.T) {
 	if len(gtr.Attachments) != 1 {
 		t.Errorf("Attachments: %d", len(gtr.Attachments))
 	} else {
-		bs, err := fs.DownloadNoAuth(ctxbg, gtr.Attachments[0].AttachmentURL)
+		bs, err := fs.DoReadFileNoAuth(ctxbg, gtr.Attachments[0].AttachmentURL)
 		if err != nil {
 			t.Errorf("ERROR: %v", err)
 		} else {
@@ -118,7 +118,7 @@ func TestTicketAPIs(t *testing.T) {
 		if len(c.Attachments) != 1 {
 			t.Errorf("Attachments: %d", len(c.Attachments))
 		} else {
-			bs, err := fs.DownloadNoAuth(ctxbg, c.Attachments[0].AttachmentURL)
+			bs, err := fs.DoReadFileNoAuth(ctxbg, c.Attachments[0].AttachmentURL)
 			if err != nil {
 				t.Errorf("ERROR: %v", err)
 			} else {

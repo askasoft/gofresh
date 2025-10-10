@@ -3,6 +3,7 @@ package freshdesk
 import (
 	"context"
 	"fmt"
+	"io"
 
 	"github.com/askasoft/gofresh/fresh"
 	"github.com/askasoft/pango/doc/jsonx"
@@ -119,33 +120,51 @@ func (c *Client) DoDelete(ctx context.Context, url string) error {
 	return (*fresh.Client)(c).DoDelete(ctx, url)
 }
 
-func (c *Client) Download(ctx context.Context, url string) ([]byte, error) {
-	return (*fresh.Client)(c).DoDownload(ctx, url)
+func (c *Client) DoCopyFile(ctx context.Context, url string, w io.Writer) error {
+	return (*fresh.Client)(c).DoCopyFile(ctx, url, w)
 }
 
-func (c *Client) SaveFile(ctx context.Context, url string, path string) error {
+func (c *Client) DoReadFile(ctx context.Context, url string) ([]byte, error) {
+	return (*fresh.Client)(c).DoReadFile(ctx, url)
+}
+
+func (c *Client) DoSaveFile(ctx context.Context, url string, path string) error {
 	return (*fresh.Client)(c).DoSaveFile(ctx, url, path)
 }
 
-func (c *Client) DownloadNoAuth(ctx context.Context, url string) ([]byte, error) {
-	return (*fresh.Client)(c).DoDownloadNoAuth(ctx, url)
+func (c *Client) DoCopyFileNoAuth(ctx context.Context, url string, w io.Writer) error {
+	return (*fresh.Client)(c).DoCopyFileNoAuth(ctx, url, w)
 }
 
-func (c *Client) SaveFileNoAuth(ctx context.Context, url string, path string) error {
+func (c *Client) DoReadFileNoAuth(ctx context.Context, url string) ([]byte, error) {
+	return (*fresh.Client)(c).DoReadFileNoAuth(ctx, url)
+}
+
+func (c *Client) DoSaveFileNoAuth(ctx context.Context, url string, path string) error {
 	return (*fresh.Client)(c).DoSaveFileNoAuth(ctx, url, path)
 }
+
+// unsupported by Freshdesk API
+// func (c *Client) CopyAttachment(ctx context.Context, aid int64, w io.Writer) error {
+// 	url := c.Endpoint("/attachments/%d", aid)
+// 	return c.DoCopyFile(ctx, url, w)
+// }
+
+// unsupported by Freshdesk API
+// func (c *Client) ReadAttachment(ctx context.Context, aid int64) ([]byte, error) {
+// 	url := c.Endpoint("/attachments/%d", aid)
+// 	return c.DoReadFile(ctx, url)
+// }
+
+// unsupported by Freshdesk API
+// func (c *Client) SaveAttachment(ctx context.Context, aid int64, path string) error {
+// 	url := c.Endpoint("/attachments/%d", aid)
+// 	return c.DoSaveFile(ctx, url, path)
+// }
 
 func (c *Client) DeleteAttachment(ctx context.Context, aid int64) error {
 	url := c.Endpoint("/attachments/%d", aid)
 	return c.DoDelete(ctx, url)
-}
-
-// GetJob get job detail
-func (c *Client) GetJob(ctx context.Context, jid string) (*Job, error) {
-	url := c.Endpoint("/jobs/%s", jid)
-	job := &Job{}
-	err := c.DoGet(ctx, url, job)
-	return job, err
 }
 
 // GetAgentTicketURL return a permlink for agent ticket URL

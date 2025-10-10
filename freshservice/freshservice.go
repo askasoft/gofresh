@@ -3,6 +3,7 @@ package freshservice
 import (
 	"context"
 	"fmt"
+	"io"
 
 	"github.com/askasoft/gofresh/fresh"
 	"github.com/askasoft/pango/doc/jsonx"
@@ -96,31 +97,50 @@ func (c *Client) DoDelete(ctx context.Context, url string) error {
 	return (*fresh.Client)(c).DoDelete(ctx, url)
 }
 
-func (c *Client) Download(ctx context.Context, url string) ([]byte, error) {
-	return (*fresh.Client)(c).DoDownload(ctx, url)
+func (c *Client) DoCopyFile(ctx context.Context, url string, w io.Writer) error {
+	return (*fresh.Client)(c).DoCopyFile(ctx, url, w)
 }
 
-func (c *Client) SaveFile(ctx context.Context, url string, path string) error {
+func (c *Client) DoReadFile(ctx context.Context, url string) ([]byte, error) {
+	return (*fresh.Client)(c).DoReadFile(ctx, url)
+}
+
+func (c *Client) DoSaveFile(ctx context.Context, url string, path string) error {
 	return (*fresh.Client)(c).DoSaveFile(ctx, url, path)
 }
 
-func (c *Client) DownloadNoAuth(ctx context.Context, url string) ([]byte, error) {
-	return (*fresh.Client)(c).DoDownloadNoAuth(ctx, url)
+func (c *Client) DoCopyFileNoAuth(ctx context.Context, url string, w io.Writer) error {
+	return (*fresh.Client)(c).DoCopyFileNoAuth(ctx, url, w)
 }
 
-func (c *Client) SaveFileNoAuth(ctx context.Context, url string, path string) error {
+func (c *Client) DoReadFileNoAuth(ctx context.Context, url string) ([]byte, error) {
+	return (*fresh.Client)(c).DoReadFileNoAuth(ctx, url)
+}
+
+func (c *Client) DoSaveFileNoAuth(ctx context.Context, url string, path string) error {
 	return (*fresh.Client)(c).DoSaveFileNoAuth(ctx, url, path)
 }
 
-func (c *Client) DownloadAttachment(ctx context.Context, aid int64) ([]byte, error) {
+func (c *Client) CopyAttachment(ctx context.Context, aid int64, w io.Writer) error {
 	url := c.Endpoint("/attachments/%d", aid)
-	return c.Download(ctx, url)
+	return c.DoCopyFile(ctx, url, w)
+}
+
+func (c *Client) ReadAttachment(ctx context.Context, aid int64) ([]byte, error) {
+	url := c.Endpoint("/attachments/%d", aid)
+	return c.DoReadFile(ctx, url)
 }
 
 func (c *Client) SaveAttachment(ctx context.Context, aid int64, path string) error {
 	url := c.Endpoint("/attachments/%d", aid)
-	return c.SaveFile(ctx, url, path)
+	return c.DoSaveFile(ctx, url, path)
 }
+
+// unsupported by Freshservice API
+// func (c *Client) DeleteAttachment(ctx context.Context, aid int64) error {
+// 	url := c.Endpoint("/attachments/%d", aid)
+// 	return c.DoDelete(ctx, url)
+// }
 
 // GetAgentTicketURL return a permlink for agent ticket URL
 func (c *Client) GetAgentTicketURL(tid int64) string {

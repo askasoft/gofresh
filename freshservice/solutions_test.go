@@ -82,7 +82,7 @@ func TestSolutionAPIs(t *testing.T) {
 		t.Fatalf("ERROR: %v", err)
 	}
 
-	uad, err := fs.DownloadNoAuth(ctxbg, ua.Attachments[0].AttachmentURL)
+	uad, err := fs.DoReadFileNoAuth(ctxbg, ua.Attachments[0].AttachmentURL)
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
@@ -90,7 +90,7 @@ func TestSolutionAPIs(t *testing.T) {
 		t.Fatal("Attachment content not equal")
 	}
 
-	uad, err = fs.DownloadAttachment(ctxbg, ua.Attachments[0].ID)
+	uad, err = fs.ReadAttachment(ctxbg, ua.Attachments[0].ID)
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
