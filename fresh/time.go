@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	DateFormat = "2006-01-02"
-	TimeFormat = time.RFC3339 //"2006-01-02T15:04:05Z07:00"
+	DateFormat = time.DateOnly // "2006-01-02"
+	TimeFormat = time.RFC3339  // "2006-01-02T15:04:05Z07:00"
 )
 
 type Date struct {
@@ -18,7 +18,7 @@ type Date struct {
 }
 
 func ParseDate(s string) (Date, error) {
-	t, err := tmu.ParseInLocation(s, time.UTC, DateFormat)
+	t, err := tmu.ParseInLocation(s, time.UTC, DateFormat, TimeFormat)
 	if err != nil {
 		return Date{}, err
 	}
@@ -49,7 +49,7 @@ func (d *Date) UnmarshalJSON(data []byte) (err error) {
 		return fmt.Errorf("fresh: invalid date format %q", js)
 	}
 
-	d.Time, err = tmu.ParseInLocation(js[1:len(js)-1], time.UTC, DateFormat)
+	d.Time, err = tmu.ParseInLocation(js[1:len(js)-1], time.UTC, DateFormat, TimeFormat)
 	return
 }
 
