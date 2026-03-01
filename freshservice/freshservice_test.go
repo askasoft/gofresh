@@ -25,7 +25,7 @@ func testNewFreshservice(t *testing.T) *Freshservice {
 	logs.SetLevel(log.LevelInfo)
 	fd := &Freshservice{
 		Domain:     domain,
-		Apikey:     apikey,
+		APIKey:     apikey,
 		Logger:     logs.GetLogger("FSV"),
 		MaxRetries: 1,
 		RetryAfter: time.Second * 3,

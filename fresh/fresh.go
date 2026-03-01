@@ -32,7 +32,7 @@ type CustomRequest interface {
 
 type Client struct {
 	Domain   string
-	Apikey   string
+	APIKey   string
 	Username string
 	Password string
 
@@ -59,8 +59,8 @@ func (c *Client) authenticate(req *http.Request) {
 		req.Header.Set("Content-Type", contentTypeJSON)
 	}
 
-	if c.Apikey != "" {
-		req.SetBasicAuth(c.Apikey, "X")
+	if c.APIKey != "" {
+		req.SetBasicAuth(c.APIKey, "X")
 	} else {
 		req.SetBasicAuth(c.Username, c.Password)
 	}
