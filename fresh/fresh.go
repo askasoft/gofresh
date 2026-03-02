@@ -26,8 +26,9 @@ const (
 	contentTypeJSON = `application/json; charset="utf-8"`
 )
 
-type CustomRequest interface {
-	RequestBody() (io.Reader, string, error)
+// BodyMarshaler is the interface implemented by types that can marshal themselves for http request.
+type BodyMarshaler interface {
+	MarshalBody() (io.Reader, string, error)
 }
 
 type Client struct {
@@ -390,8 +391,8 @@ func buildRequest(a any) (io.Reader, string, error) {
 		return nil, "", nil
 	}
 
-	if bb, ok := a.(CustomRequest); ok {
-		return bb.RequestBody()
+	if bm, ok := a.(BodyMarshaler); ok {
+		return bm.MarshalBody()
 	}
 
 	if wf, ok := a.(WithFiles); ok {

@@ -242,9 +242,8 @@ func TestSolutionManyCategories(t *testing.T) {
 	}
 
 	for _, cid := range cids {
-		fd.DeleteCategory(ctxbg, cid)
-		if err != nil {
-			t.Fatalf("ERROR: %v", err)
+		if err := fd.DeleteCategory(ctxbg, cid); err != nil {
+			t.Errorf("ERROR: %v", err)
 		}
 	}
 }
