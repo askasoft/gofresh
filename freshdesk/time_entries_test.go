@@ -37,7 +37,7 @@ func TestTimeEntriesAPIs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fd.Logger.Debug(ctm)
+	tlog.Debug(ctm)
 
 	tms, _, err := fd.ListTimeEntries(ctxbg, &ListTimeEntriesOption{
 		AgentID: 2043035275047,
@@ -45,12 +45,12 @@ func TestTimeEntriesAPIs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fd.Logger.Debug(tms)
+	tlog.Debug(tms)
 
 	err = fd.IterTimeEntries(ctxbg, &ListTimeEntriesOption{
 		AgentID: 2043035275047,
 	}, func(te *TimeEntry) error {
-		fd.Logger.Debug(te)
+		tlog.Debug(te)
 		return nil
 	})
 	if err != nil {

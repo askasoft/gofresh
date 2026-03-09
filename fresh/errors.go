@@ -1,7 +1,6 @@
 package fresh
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -18,7 +17,7 @@ type FieldError struct {
 	Message string `json:"message,omitempty"`
 }
 
-func (fe *FieldError) Error() string {
+func (fe FieldError) Error() string {
 	return fmt.Sprintf("(%s: %s: %s)", fe.Code, fe.Field, fe.Message)
 }
 
@@ -30,7 +29,7 @@ type ResultError struct {
 	Code        string        `json:"code,omitempty"`
 	Message     string        `json:"message,omitempty"`
 	Description string        `json:"description,omitempty"`
-	Errors      []*FieldError `json:"errors,omitempty"`
+	Errors      []FieldError  `json:"errors,omitempty"`
 	RetryAfter  time.Duration `json:"-"`
 }
 
@@ -51,10 +50,6 @@ func newResultError(res *http.Response) *ResultError {
 		StatusCode: res.StatusCode,
 		Status:     res.Status,
 	}
-}
-
-func (re *ResultError) GetRetryAfter() time.Duration {
-	return re.RetryAfter
 }
 
 func (re *ResultError) Detail() string {
@@ -84,13 +79,7 @@ func (re *ResultError) Detail() string {
 }
 
 func (re *ResultError) Error() string {
-	es := re.Status
-
-	if re.RetryAfter > 0 {
-		es += " (Retry After " + re.RetryAfter.String() + ")"
-	}
-
-	es += " (" + re.Method + " " + re.URL.String() + ")"
+	es := re.Status + " (" + re.Method + " " + re.URL.String() + ")"
 
 	detail := re.Detail()
 	if detail != "" {
@@ -98,11 +87,4 @@ func (re *ResultError) Error() string {
 	}
 
 	return es
-}
-
-func shouldRetry(err error) bool {
-	if re, ok := AsResultError(err); ok {
-		return re.StatusCode == http.StatusTooManyRequests || (re.StatusCode >= 500 && re.StatusCode <= 599)
-	}
-	return !errors.Is(err, context.Canceled)
 }

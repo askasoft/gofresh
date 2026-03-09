@@ -22,7 +22,7 @@ func TestContactFieldsAPIs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fd.Logger.Debug(ctf)
+	tlog.Debug(ctf)
 
 	tfu := &ContactFieldUpdate{
 		LabelForCustomers: "testfieldlabelforcustomersupd",
@@ -32,14 +32,14 @@ func TestContactFieldsAPIs(t *testing.T) {
 	if err != nil {
 		t.Errorf("ERROR: %v", err)
 	} else {
-		fd.Logger.Debug(utf)
+		tlog.Debug(utf)
 	}
 
 	gtfr, err := fd.GetContactField(ctxbg, ctf.ID)
 	if err != nil {
 		t.Errorf("ERROR: %v", err)
 	} else {
-		fd.Logger.Debug(gtfr)
+		tlog.Debug(gtfr)
 	}
 
 	err = fd.DeleteContactField(ctxbg, ctf.ID)
@@ -58,5 +58,5 @@ func TestListContactFieldsAPIs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fd.Logger.Debug(tfs)
+	tlog.Debug(tfs)
 }

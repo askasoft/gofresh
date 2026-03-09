@@ -18,7 +18,7 @@ func TestGroups(t *testing.T) {
 		for _, g := range gs {
 			err := fd.DeleteGroup(ctxbg, g.ID)
 			if err != nil {
-				fd.Logger.Errorf("Failed to delete group [%d] %s: %v", g.ID, g.Name, err)
+				tlog.Errorf("Failed to delete group [%d] %s: %v", g.ID, g.Name, err)
 			}
 		}
 	}()
@@ -38,7 +38,7 @@ func TestGroups(t *testing.T) {
 
 	itcnt := 0
 	err := fd.IterGroups(ctxbg, nil, func(g *Group) error {
-		fd.Logger.Debugf("Iterate group [%d] %s", g.ID, g.Name)
+		tlog.Debugf("Iterate group [%d] %s", g.ID, g.Name)
 		if str.Contains(g.Name, "ApiTestGroup") {
 			itcnt++
 		}

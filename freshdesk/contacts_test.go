@@ -29,7 +29,7 @@ func TestContactAPIs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fd.Logger.Info(c1)
+	tlog.Info(c1)
 
 	defer func() {
 		err = fd.DeleteContact(ctxbg, c1.ID)
@@ -46,16 +46,16 @@ func TestContactAPIs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fd.Logger.Info(uc)
+	tlog.Info(uc)
 
 	gc, err := fd.GetContact(ctxbg, c1.ID)
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fd.Logger.Info(gc)
+	tlog.Info(gc)
 
 	err = fd.IterContacts(ctxbg, nil, func(c *Contact) error {
-		fd.Logger.Info(c)
+		tlog.Info(c)
 		return nil
 	})
 	if err != nil {
@@ -77,7 +77,7 @@ func TestExportContacts(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fd.Logger.Info(job)
+	tlog.Info(job)
 }
 
 func TestGetContacts(t *testing.T) {
@@ -95,5 +95,5 @@ func TestGetContacts(t *testing.T) {
 		t.Fatalf("ERROR: %v", err)
 	}
 
-	fd.Logger.Info(c)
+	tlog.Info(c)
 }

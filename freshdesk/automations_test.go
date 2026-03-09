@@ -14,13 +14,13 @@ func TestAutomationAPIs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fd.Logger.Debug(rules)
+	tlog.Debug(rules)
 
 	for _, rule := range rules {
 		rule, err := fd.GetAutomationRule(ctxbg, AutomationTypeTicketCreation, rule.ID)
 		if err != nil {
 			t.Fatalf("ERROR: %v", err)
 		}
-		fd.Logger.Info(rule)
+		tlog.Info(rule)
 	}
 }

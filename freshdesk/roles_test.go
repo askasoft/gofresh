@@ -14,5 +14,5 @@ func TestListRoles(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fd.Logger.Debug(roles)
+	tlog.Debug(roles)
 }

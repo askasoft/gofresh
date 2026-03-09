@@ -24,7 +24,7 @@ func TestAgentAPIs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fd.Logger.Debug(ca)
+	tlog.Debug(ca)
 
 	au := &AgentUpdate{
 		Occasional: true,
@@ -35,16 +35,16 @@ func TestAgentAPIs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fd.Logger.Debug(ua)
+	tlog.Debug(ua)
 
 	ga, err := fd.GetAgent(ctxbg, ua.ID)
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fd.Logger.Debug(ga)
+	tlog.Debug(ga)
 
 	err = fd.IterAgents(ctxbg, nil, func(a *Agent) error {
-		fd.Logger.Debug(a)
+		tlog.Debug(a)
 		return nil
 	})
 	if err != nil {
@@ -71,5 +71,5 @@ func TestListAgents(t *testing.T) {
 	if len(as) < 1 {
 		t.Fatal("ListAgents return empty array")
 	}
-	fd.Logger.Debug(as)
+	tlog.Debug(as)
 }

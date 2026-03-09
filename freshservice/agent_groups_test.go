@@ -21,7 +21,7 @@ func TestAgentGroups(t *testing.T) {
 		for _, ag := range ags {
 			err := fs.DeleteAgentGroup(ctxbg, ag.ID)
 			if err != nil {
-				fs.Logger.Errorf("Failed to delete group [%d] %s: %v", ag.ID, ag.Name, err)
+				tlog.Errorf("Failed to delete group [%d] %s: %v", ag.ID, ag.Name, err)
 			}
 		}
 	}()
@@ -41,7 +41,7 @@ func TestAgentGroups(t *testing.T) {
 
 	itcnt := 0
 	err := fs.IterAgentGroups(ctxbg, nil, func(ag *AgentGroup) error {
-		fs.Logger.Debugf("Iterate group [%d] %s", ag.ID, ag.Name)
+		tlog.Debugf("Iterate group [%d] %s", ag.ID, ag.Name)
 		if str.Contains(ag.Name, "ApiTestGroup") {
 			itcnt++
 		}
@@ -53,5 +53,5 @@ func TestAgentGroups(t *testing.T) {
 	if count != itcnt {
 		t.Fatalf("%d created, but %d iterated", count, itcnt)
 	}
-	fs.Logger.Infof("Iterate %d groups", itcnt)
+	tlog.Infof("Iterate %d groups", itcnt)
 }

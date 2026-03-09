@@ -18,7 +18,7 @@ func TestListCompanies(t *testing.T) {
 	if len(cs) < 1 {
 		t.Fatal("ListCompanies return empty array")
 	}
-	fd.Logger.Debug(cs)
+	tlog.Debug(cs)
 }
 
 func TestExportCompany(t *testing.T) {
@@ -36,5 +36,5 @@ func TestExportCompany(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fd.Logger.Debug(job)
+	tlog.Debug(job)
 }

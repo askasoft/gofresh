@@ -16,11 +16,11 @@ func TestIterApprovals(t *testing.T) {
 		Status: ApprovalStatusRequested.String(),
 	}, func(a *Approval) error {
 		itcnt++
-		fs.Logger.Debugf("Iterate Approval #%d: %s", itcnt, a)
+		tlog.Debugf("Iterate Approval #%d: %s", itcnt, a)
 		return nil
 	})
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fs.Logger.Infof("Iterate %d approvals", itcnt)
+	tlog.Infof("Iterate %d approvals", itcnt)
 }

@@ -6,9 +6,17 @@ import (
 	"time"
 
 	"github.com/askasoft/pango/log"
+	"github.com/askasoft/pango/log/httplog"
 )
 
-func testNewFreshdesk(t *testing.T) *Freshdesk {
+var tlog *log.Log
+
+func init() {
+	tlog = log.NewLog()
+	tlog.SetLevel(log.LevelInfo)
+}
+
+func testNewFreshdesk(t *testing.T) *Client {
 	apikey := os.Getenv("FDK_APIKEY")
 	if apikey == "" {
 		t.Skip("FDK_APIKEY not set")
@@ -21,15 +29,14 @@ func testNewFreshdesk(t *testing.T) *Freshdesk {
 		return nil
 	}
 
-	logs := log.NewLog()
-	logs.SetLevel(log.LevelInfo)
-	fd := &Freshdesk{
-		Domain:     domain,
-		APIKey:     apikey,
-		Logger:     logs.GetLogger("Fresh"),
-		MaxRetries: 1,
-		RetryAfter: time.Second * 3,
+	logger := tlog.GetLogger("FDK")
+
+	fdk := &Client{
+		Domain:    domain,
+		APIKey:    apikey,
+		Transport: httplog.LoggingRoundTripper(logger),
+		Retryer:   NewRetryer(logger, 1, time.Second*3),
 	}
 
-	return fd
+	return fdk
 }

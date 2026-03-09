@@ -4,9 +4,12 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"time"
 
 	"github.com/askasoft/gofresh/fresh"
 	"github.com/askasoft/pango/doc/jsonx"
+	"github.com/askasoft/pango/log"
+	"github.com/askasoft/pango/ret"
 )
 
 type FieldError = fresh.FieldError
@@ -68,8 +71,10 @@ func toString(o any) string {
 	return jsonx.Prettify(o)
 }
 
-// alias for Client
-type Freshservice = Client
+// default retry on not canceled error or (status = 429 || (status >= 500 && status <= 599))
+func NewRetryer(logger log.Logger, maxRetries int, retryAfter time.Duration) *ret.Retryer {
+	return fresh.NewRetryer(logger, maxRetries, retryAfter)
+}
 
 type Client fresh.Client
 

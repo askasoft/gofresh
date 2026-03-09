@@ -19,7 +19,7 @@ func TestCompanyFieldsAPIs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fd.Logger.Debug(ctf)
+	tlog.Debug(ctf)
 
 	tfu := &CompanyFieldUpdate{
 		Label: "testfieldlabelforupd",
@@ -29,14 +29,14 @@ func TestCompanyFieldsAPIs(t *testing.T) {
 	if err != nil {
 		t.Errorf("ERROR: %v", err)
 	} else {
-		fd.Logger.Debug(utf)
+		tlog.Debug(utf)
 	}
 
 	gtfr, err := fd.GetCompanyField(ctxbg, ctf.ID)
 	if err != nil {
 		t.Errorf("ERROR: %v", err)
 	} else {
-		fd.Logger.Debug(gtfr)
+		tlog.Debug(gtfr)
 	}
 
 	err = fd.DeleteCompanyField(ctxbg, ctf.ID)
@@ -55,5 +55,5 @@ func TestListCompanyFieldsAPIs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fd.Logger.Debug(tfs)
+	tlog.Debug(tfs)
 }

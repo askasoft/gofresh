@@ -41,7 +41,7 @@ func TestTicketAPIs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fs.Logger.Debug(ct)
+	tlog.Debug(ct)
 
 	tu := &TicketUpdate{}
 	tu.Description = `<div>
@@ -55,7 +55,7 @@ func TestTicketAPIs(t *testing.T) {
 	if err != nil {
 		t.Errorf("ERROR: %v", err)
 	} else {
-		fs.Logger.Debug(ut)
+		tlog.Debug(ut)
 	}
 
 	tm2, _ := time.ParseInLocation("2006-1-2 15:04:05", "2000-01-02 10:20:30", time.Local)
@@ -69,7 +69,7 @@ func TestTicketAPIs(t *testing.T) {
 	if err != nil {
 		t.Errorf("ERROR: %v", err)
 	} else {
-		fs.Logger.Debug(cn)
+		tlog.Debug(cn)
 	}
 
 	cnu := &Note{
@@ -80,14 +80,14 @@ func TestTicketAPIs(t *testing.T) {
 	if err != nil {
 		t.Errorf("ERROR: %v", err)
 	} else {
-		fs.Logger.Debug(uc)
+		tlog.Debug(uc)
 	}
 
 	gtr, err := fs.GetTicket(ctxbg, ct.ID, TicketIncludeRequester)
 	if err != nil {
 		t.Errorf("ERROR: %v", err)
 	} else {
-		fs.Logger.Debug(gtr)
+		tlog.Debug(gtr)
 	}
 
 	if len(gtr.Attachments) != 1 {
@@ -108,7 +108,7 @@ func TestTicketAPIs(t *testing.T) {
 	if err != nil {
 		t.Errorf("ERROR: %v", err)
 	} else {
-		fs.Logger.Debug(gtc)
+		tlog.Debug(gtc)
 	}
 
 	if len(gtc.Conversations) != 1 {
@@ -152,7 +152,7 @@ func TestListTicket(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fs.Logger.Debug(ts)
+	tlog.Debug(ts)
 }
 
 func TestIterTicket(t *testing.T) {
@@ -165,7 +165,7 @@ func TestIterTicket(t *testing.T) {
 	ltp := &ListTicketsOption{PerPage: 2}
 	err := fs.IterTickets(ctxbg, ltp, func(t *Ticket) error {
 		cnt++
-		fs.Logger.Debug(t)
+		tlog.Debug(t)
 
 		if cnt > 10 {
 			return io.EOF
@@ -188,5 +188,5 @@ func TestListTicketFields(t *testing.T) {
 		t.Fatalf("ERROR: %v", err)
 	}
 
-	fs.Logger.Debug(tfs)
+	tlog.Debug(tfs)
 }

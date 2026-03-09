@@ -13,11 +13,11 @@ func TestWorkspaces(t *testing.T) {
 	itcnt := 0
 	err := fs.IterWorkspaces(ctxbg, nil, func(w *Workspace) error {
 		itcnt++
-		fs.Logger.Debugf("Iterate workspace #%d: %s", w.ID, w.Name)
+		tlog.Debugf("Iterate workspace #%d: %s", w.ID, w.Name)
 		return nil
 	})
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fs.Logger.Infof("Iterate %d workspaces", itcnt)
+	tlog.Infof("Iterate %d workspaces", itcnt)
 }

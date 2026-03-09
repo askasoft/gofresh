@@ -37,7 +37,7 @@ func TestTicketAPIs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fd.Logger.Debug(ct)
+	tlog.Debug(ct)
 
 	tu := &TicketUpdate{}
 	tu.Description = `<div>
@@ -62,7 +62,7 @@ func TestTicketAPIs(t *testing.T) {
 	if len(cs) == 0 {
 		t.Errorf("ERROR: %v", "missing contact")
 	} else {
-		fd.Logger.Debug(cs)
+		tlog.Debug(cs)
 	}
 
 	// public note
@@ -76,7 +76,7 @@ func TestTicketAPIs(t *testing.T) {
 	if err != nil {
 		t.Errorf("ERROR: %v", err)
 	} else {
-		fd.Logger.Debug(cnu)
+		tlog.Debug(cnu)
 	}
 
 	// private note
@@ -88,7 +88,7 @@ func TestTicketAPIs(t *testing.T) {
 	if err != nil {
 		t.Errorf("ERROR: %v", err)
 	} else {
-		fd.Logger.Debug(cn)
+		tlog.Debug(cn)
 	}
 
 	nu := &NoteUpdate{
@@ -99,14 +99,14 @@ func TestTicketAPIs(t *testing.T) {
 	if err != nil {
 		t.Errorf("ERROR: %v", err)
 	} else {
-		fd.Logger.Debug(uc)
+		tlog.Debug(uc)
 	}
 
 	gtr, err := fd.GetTicket(ctxbg, ct.ID, TicketIncludeRequester)
 	if err != nil {
 		t.Errorf("ERROR: %v", err)
 	} else {
-		fd.Logger.Debug(gtr)
+		tlog.Debug(gtr)
 	}
 
 	if len(gtr.Attachments) != 1 {
@@ -127,7 +127,7 @@ func TestTicketAPIs(t *testing.T) {
 	if err != nil {
 		t.Errorf("ERROR: %v", err)
 	} else {
-		fd.Logger.Debug(gtc)
+		tlog.Debug(gtc)
 	}
 
 	if len(gtc.Conversations) != 2 {
@@ -176,7 +176,7 @@ func TestListTickets(t *testing.T) {
 	}
 
 	for i, t := range ts {
-		fd.Logger.Infof("%d: #%d [%s] %s", i+1, t.ID, t.CreatedAt.String(), t.Subject)
+		tlog.Infof("%d: #%d [%s] %s", i+1, t.ID, t.CreatedAt.String(), t.Subject)
 	}
 }
 
@@ -191,12 +191,12 @@ func TestIterTicketsAndConversations(t *testing.T) {
 	i, j := 0, 0
 	err := fd.IterTickets(ctxbg, ltp, func(t *Ticket) error {
 		i++
-		fd.Logger.Infof("%d: #%d [%s] %s", i, t.ID, t.CreatedAt.String(), t.Subject)
+		tlog.Infof("%d: #%d [%s] %s", i, t.ID, t.CreatedAt.String(), t.Subject)
 
 		j = 0
 		fd.IterTicketConversations(ctxbg, t.ID, nil, func(c *Conversation) error {
 			j++
-			fd.Logger.Infof("#%d [%d]: Source: %v, Income: %v, UID: %d, THID: %d, FROM: %s, TO: %v, CC: %v",
+			tlog.Infof("#%d [%d]: Source: %v, Income: %v, UID: %d, THID: %d, FROM: %s, TO: %v, CC: %v",
 				t.ID, j, c.Source, c.Incoming, c.UserID, c.ThreadID, c.FromEmail, c.ToEmails, c.CcEmails)
 			return nil
 		})
@@ -222,9 +222,9 @@ func TestFilterTickets(t *testing.T) {
 		t.Fatalf("ERROR: %v", err)
 	}
 
-	fd.Logger.Infof("Total: %d", total)
+	tlog.Infof("Total: %d", total)
 	for i, t := range ts {
-		fd.Logger.Infof("%d: #%d [%s] %s", i+1, t.ID, t.CreatedAt.String(), t.Subject)
+		tlog.Infof("%d: #%d [%s] %s", i+1, t.ID, t.CreatedAt.String(), t.Subject)
 	}
 }
 
@@ -241,7 +241,7 @@ func TestIterFilterTickets(t *testing.T) {
 	i := 0
 	err := fd.IterFilterTickets(ctxbg, ftp, func(t *Ticket) error {
 		i++
-		fd.Logger.Infof("%d: #%d [%s] %s", i, t.ID, t.CreatedAt.String(), t.Subject)
+		tlog.Infof("%d: #%d [%s] %s", i, t.ID, t.CreatedAt.String(), t.Subject)
 		return nil
 	})
 	if err != nil {

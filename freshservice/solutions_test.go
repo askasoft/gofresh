@@ -153,7 +153,7 @@ func TestSolutionAPIs(t *testing.T) {
 	}
 
 	err = fs.IterFolderArticles(ctxbg, fol.ID, nil, func(ai *ArticleInfo) error {
-		fs.Logger.Debug(ai.String())
+		tlog.Debug(ai.String())
 		return nil
 	})
 	if err != nil {
@@ -168,13 +168,13 @@ func TestSolutionIterAllArticles(t *testing.T) {
 	}
 
 	err := fs.IterCategories(ctxbg, nil, func(c *Category) error {
-		fs.Logger.Debugf("Enter Category #%d - %s", c.ID, c.Name)
+		tlog.Debugf("Enter Category #%d - %s", c.ID, c.Name)
 
 		return fs.IterCategoryFolders(ctxbg, c.ID, nil, func(f *Folder) error {
-			fs.Logger.Debugf("Enter Folder #%d - %s", f.ID, f)
+			tlog.Debugf("Enter Folder #%d - %s", f.ID, f)
 
 			return fs.IterFolderArticles(ctxbg, f.ID, nil, func(ai *ArticleInfo) error {
-				fs.Logger.Debugf("Article #%d - %s", ai.ID, ai)
+				tlog.Debugf("Article #%d - %s", ai.ID, ai)
 				return nil
 			})
 		})

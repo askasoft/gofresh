@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -14,9 +15,9 @@ import (
 
 	"github.com/askasoft/pango/doc/jsonx"
 	"github.com/askasoft/pango/fsu"
+	"github.com/askasoft/pango/gog"
 	"github.com/askasoft/pango/iox"
 	"github.com/askasoft/pango/log"
-	"github.com/askasoft/pango/log/httplog"
 	"github.com/askasoft/pango/net/httpx"
 	"github.com/askasoft/pango/num"
 	"github.com/askasoft/pango/ret"
@@ -31,6 +32,23 @@ type BodyMarshaler interface {
 	MarshalBody() (io.Reader, string, error)
 }
 
+// default retry on not canceled error or (status = 429 || (status >= 500 && status <= 599))
+func NewRetryer(logger log.Logger, maxRetries int, retryAfter time.Duration) *ret.Retryer {
+	return &ret.Retryer{
+		MaxRetries: maxRetries,
+		ShouldRetry: func(err error) time.Duration {
+			return gog.If(shouldRetry(err), retryAfter, 0)
+		},
+	}
+}
+
+func shouldRetry(err error) bool {
+	if re, ok := AsResultError(err); ok {
+		return httpx.IsStatusRetryable(re.StatusCode)
+	}
+	return !errors.Is(err, context.Canceled)
+}
+
 type Client struct {
 	Domain   string
 	APIKey   string
@@ -39,11 +57,7 @@ type Client struct {
 
 	Transport http.RoundTripper
 	Timeout   time.Duration
-	Logger    log.Logger
-
-	MaxRetries  int
-	RetryAfter  time.Duration
-	ShouldRetry func(error) bool // default retry on not canceled error or (status = 429 || (status >= 500 && status <= 599))
+	Retryer   *ret.Retryer
 }
 
 // Endpoint formats endpoint url
@@ -52,7 +66,10 @@ func (c *Client) Endpoint(format string, a ...any) string {
 }
 
 func (c *Client) RetryForError(ctx context.Context, api func() error) (err error) {
-	return ret.RetryForError(ctx, api, c.MaxRetries, c.Logger)
+	if r := c.Retryer; r != nil {
+		return c.Retryer.Do(ctx, api)
+	}
+	return api()
 }
 
 func (c *Client) authenticate(req *http.Request) {
@@ -67,28 +84,12 @@ func (c *Client) authenticate(req *http.Request) {
 	}
 }
 
-func (c *Client) shouldRetry(err error) bool {
-	sr := c.ShouldRetry
-	if sr == nil {
-		sr = shouldRetry
-	}
-	return sr(err)
-}
-
-func (c *Client) call(req *http.Request) (res *http.Response, err error) {
-	client := &http.Client{
+func (c *Client) call(req *http.Request) (*http.Response, error) {
+	hc := http.Client{
 		Transport: c.Transport,
 		Timeout:   c.Timeout,
 	}
-
-	res, err = httplog.TraceClientDo(c.Logger, client, req)
-	if err != nil {
-		if c.shouldRetry(err) {
-			err = ret.NewRetryError(err, c.RetryAfter)
-		}
-	}
-
-	return res, err
+	return hc.Do(req)
 }
 
 func (c *Client) authAndCall(req *http.Request) (*http.Response, error) {
@@ -122,14 +123,10 @@ func (c *Client) doCall(req *http.Request, result any) (*http.Response, error) {
 		_ = decoder.Decode(re)
 	}
 
-	if c.shouldRetry(re) {
-		s := res.Header.Get("Retry-After")
-		n := num.Atoi(s)
-		if n > 0 {
-			re.RetryAfter = time.Second * time.Duration(n)
-		} else {
-			re.RetryAfter = c.RetryAfter
-		}
+	s := res.Header.Get("Retry-After")
+	n := num.Atoi(s)
+	if n > 0 {
+		re.RetryAfter = time.Second * time.Duration(n)
 	}
 
 	return res, re

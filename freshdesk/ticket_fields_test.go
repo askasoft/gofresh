@@ -22,7 +22,7 @@ func TestTicketFieldsAPIs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fd.Logger.Debug(ctf)
+	tlog.Debug(ctf)
 
 	tfu := &TicketFieldUpdate{
 		LabelForCustomers: "testfieldlabelforcustomersupd",
@@ -32,14 +32,14 @@ func TestTicketFieldsAPIs(t *testing.T) {
 	if err != nil {
 		t.Errorf("ERROR: %v", err)
 	} else {
-		fd.Logger.Debug(utf)
+		tlog.Debug(utf)
 	}
 
 	gtfr, err := fd.GetTicketField(ctxbg, ctf.ID, TicketFieldIncludeSection)
 	if err != nil {
 		t.Errorf("ERROR: %v", err)
 	} else {
-		fd.Logger.Debug(gtfr)
+		tlog.Debug(gtfr)
 	}
 
 	err = fd.DeleteTicketField(ctxbg, ctf.ID)
@@ -58,5 +58,5 @@ func TestListTicketFieldsAPIs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fd.Logger.Debug(tfs)
+	tlog.Debug(tfs)
 }

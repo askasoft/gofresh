@@ -13,11 +13,11 @@ func TestProducts(t *testing.T) {
 	itcnt := 0
 	err := fd.IterProducts(ctxbg, nil, func(p *Product) error {
 		itcnt++
-		fd.Logger.Debugf("Iterate product #%d: %s", p.ID, p.Name)
+		tlog.Debugf("Iterate product #%d: %s", p.ID, p.Name)
 		return nil
 	})
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fd.Logger.Infof("Iterate %d products", itcnt)
+	tlog.Infof("Iterate %d products", itcnt)
 }

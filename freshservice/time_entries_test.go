@@ -36,16 +36,16 @@ func TestTimeEntriesAPIs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fs.Logger.Debug(ctm)
+	tlog.Debug(ctm)
 
 	tms, _, err := fs.ListTicketTimeEntries(ctxbg, ct.ID, nil)
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
-	fs.Logger.Debug(tms)
+	tlog.Debug(tms)
 
 	err = fs.IterTicketTimeEntries(ctxbg, ct.ID, nil, func(te *TimeEntry) error {
-		fs.Logger.Debug(te)
+		tlog.Debug(te)
 		return nil
 	})
 	if err != nil {

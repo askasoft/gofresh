@@ -191,18 +191,18 @@ func TestSolutionIterAllArticles(t *testing.T) {
 
 	var itf func(f *Folder) error
 	itf = func(f *Folder) error {
-		fd.Logger.Debugf("Enter Folder #%d - %s", f.ID, f)
+		tlog.Debugf("Enter Folder #%d - %s", f.ID, f)
 
 		fd.IterSubFolders(ctxbg, f.ID, nil, itf)
 
 		return fd.IterFolderArticles(ctxbg, f.ID, nil, func(a *Article) error {
-			fd.Logger.Debugf("Article #%d - %s", a.ID, a)
+			tlog.Debugf("Article #%d - %s", a.ID, a)
 			return nil
 		})
 	}
 
 	err := fd.IterCategories(ctxbg, nil, func(c *Category) error {
-		fd.Logger.Debugf("Enter Category #%d - %s", c.ID, c.Name)
+		tlog.Debugf("Enter Category #%d - %s", c.ID, c.Name)
 		return fd.IterCategoryFolders(ctxbg, c.ID, nil, itf)
 	})
 	if err != nil {
