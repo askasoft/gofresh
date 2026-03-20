@@ -24,6 +24,7 @@ type ListRequestersOption struct {
 	Email             string
 	MobilePhoneNumber string
 	WorkPhoneNumber   string
+	WorkspaceID       int64
 	DepartmentID      int64
 	TimeZone          string
 	Language          string
@@ -49,6 +50,7 @@ func (lro *ListRequestersOption) Values() Values {
 	q.SetString("email", lro.Email)
 	q.SetString("mobile_phone_number", lro.MobilePhoneNumber)
 	q.SetString("work_phone_number", lro.WorkPhoneNumber)
+	q.SetInt64("workspace_id", lro.WorkspaceID)
 	q.SetInt64("department_id", lro.DepartmentID)
 	q.SetString("time_zone", lro.TimeZone)
 	q.SetString("language", lro.Language)

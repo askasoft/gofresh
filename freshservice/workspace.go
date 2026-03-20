@@ -1,6 +1,8 @@
 package freshservice
 
 const (
+	WorkspaceAll = 1 // special workspace id: all workspaces
+
 	WorkspaceStateActive = "active"
 	WorkspaceStateDraft  = "draft"
 )

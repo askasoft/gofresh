@@ -88,7 +88,15 @@ type Folder struct {
 	// ID of the Contact Groups to which this solution folder is visible. ( Mandatory if visibility is set to '6')
 	RequesterGroupIDs []int64 `json:"requester_group_ids,omitempty"`
 
+	// Unique ID of the Groups to which this solution folder is managed by.
 	ManageByGroupIDs []int64 `json:"manage_by_group_ids,omitempty"`
+
+	// This applies to Freshservice for MSPs only.
+	// 1. List of clients to which Folder is applicable To
+	// 2. If Applicable to = All Clients, then use value =1 and no other value
+	// 3. If Applicable to has to be set up for multiple clients, then use client ids for those as an array.
+	// Cannot use value =1 along with other values
+	ApplicableToWorkspaceIDs []int64 `json:"applicable_to_workspace_ids,omitempty"`
 
 	CreatedAt Time `json:"created_at,omitempty"`
 
@@ -133,7 +141,15 @@ type FolderCreate struct {
 	// ID of the Contact Groups to which this solution folder is visible. ( Mandatory if visibility is set to '6')
 	RequesterGroupIDs []int64 `json:"requester_group_ids,omitempty"`
 
+	// Unique ID of the Groups to which this solution folder is managed by.
 	ManageByGroupIDs []int64 `json:"manage_by_group_ids,omitempty"`
+
+	// This applies to Freshservice for MSPs only.
+	// 1. List of clients to which Folder is applicable To
+	// 2. If Applicable to = All Clients, then use value =1 and no other value
+	// 3. If Applicable to has to be set up for multiple clients, then use client ids for those as an array.
+	// Cannot use value =1 along with other values
+	ApplicableToWorkspaceIDs []int64 `json:"applicable_to_workspace_ids,omitempty"`
 }
 
 func (f *FolderCreate) String() string {
