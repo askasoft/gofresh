@@ -12,16 +12,22 @@ type TicketUrgency int
 type TicketImpact int
 
 const (
-	TicketSourceEmail          TicketSource = 1
-	TicketSourcePortal         TicketSource = 2
-	TicketSourcePhone          TicketSource = 3
-	TicketSourceChat           TicketSource = 4
-	TicketSourceFeedbackWidget TicketSource = 5
-	TicketSourceYammer         TicketSource = 6
-	TicketSourceAWSCloudwatch  TicketSource = 7
-	TicketSourcePagerduty      TicketSource = 8
-	TicketSourceWalkup         TicketSource = 9
-	TicketSourceSlack          TicketSource = 10
+	TicketSourceEmail               TicketSource = 1
+	TicketSourcePortal              TicketSource = 2
+	TicketSourcePhone               TicketSource = 3
+	TicketSourceChat                TicketSource = 4
+	TicketSourceFeedbackWidget      TicketSource = 5
+	TicketSourceYammer              TicketSource = 6
+	TicketSourceAWSCloudwatch       TicketSource = 7
+	TicketSourcePagerduty           TicketSource = 8
+	TicketSourceWalkup              TicketSource = 9
+	TicketSourceSlack               TicketSource = 10
+	TicketSourceChatbot             TicketSource = 11
+	TicketSourceWorkplace           TicketSource = 12
+	TicketSourceEmployeeOnboarding  TicketSource = 13
+	TicketSourceAlerts              TicketSource = 14
+	TicketSourceMSTeams             TicketSource = 15
+	TicketSourceEmployeeOffboarding TicketSource = 18
 
 	TicketStatusOpen     TicketStatus = 2
 	TicketStatusPending  TicketStatus = 3
@@ -69,6 +75,18 @@ func (ts TicketSource) String() string {
 		return "Walkup"
 	case TicketSourceSlack:
 		return "Slack"
+	case TicketSourceChatbot:
+		return "Chatbot"
+	case TicketSourceWorkplace:
+		return "Workplace"
+	case TicketSourceEmployeeOnboarding:
+		return "EmployeeOnboarding"
+	case TicketSourceAlerts:
+		return "Alerts"
+	case TicketSourceMSTeams:
+		return "MSTeams"
+	case TicketSourceEmployeeOffboarding:
+		return "EmployeeOffboarding"
 	default:
 		return num.Itoa(int(ts))
 	}
@@ -96,6 +114,18 @@ func ParseTicketSource(s string) TicketSource {
 		return TicketSourceWalkup
 	case "slack":
 		return TicketSourceSlack
+	case "chatbot":
+		return TicketSourceChatbot
+	case "workplace":
+		return TicketSourceWorkplace
+	case "employeeonboarding":
+		return TicketSourceEmployeeOnboarding
+	case "alerts":
+		return TicketSourceAlerts
+	case "msteams":
+		return TicketSourceMSTeams
+	case "employeeoffboarding":
+		return TicketSourceEmployeeOffboarding
 	default:
 		return TicketSource(num.Atoi(s))
 	}
