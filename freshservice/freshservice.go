@@ -72,8 +72,8 @@ func toString(o any) string {
 }
 
 // default retry on not canceled error or (status = 429 || (status >= 500 && status <= 599))
-func NewRetryer(logger log.Logger, maxRetries int, retryAfter time.Duration) *ret.Retryer {
-	return fresh.NewRetryer(logger, maxRetries, retryAfter)
+func NewRetryer(retryAfter time.Duration, maxRetries int, logger log.Logger) *ret.Retryer {
+	return fresh.NewRetryer(retryAfter, maxRetries, logger)
 }
 
 type Client fresh.Client

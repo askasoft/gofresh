@@ -33,20 +33,20 @@ type BodyMarshaler interface {
 }
 
 // default retry on not canceled error or (status = 429 || (status >= 500 && status <= 599))
-func NewRetryer(logger log.Logger, maxRetries int, retryAfter time.Duration) *ret.Retryer {
+func NewRetryer(retryAfter time.Duration, maxRetries int, logger log.Logger) *ret.Retryer {
 	return &ret.Retryer{
+		Logger:     logger,
 		MaxRetries: maxRetries,
 		ShouldRetry: func(err error) time.Duration {
-			return gog.If(shouldRetry(err), retryAfter, 0)
+			if re, ok := AsResultError(err); ok {
+				if re.RetryAfter > 0 {
+					return re.RetryAfter
+				}
+				return gog.If(httpx.IsStatusRetryable(re.StatusCode), retryAfter, 0)
+			}
+			return gog.If(errors.Is(err, context.Canceled), 0, retryAfter)
 		},
 	}
-}
-
-func shouldRetry(err error) bool {
-	if re, ok := AsResultError(err); ok {
-		return httpx.IsStatusRetryable(re.StatusCode)
-	}
-	return !errors.Is(err, context.Canceled)
 }
 
 type Client struct {

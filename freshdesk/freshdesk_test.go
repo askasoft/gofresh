@@ -35,7 +35,7 @@ func testNewFreshdesk(t *testing.T) *Client {
 		Domain:    domain,
 		APIKey:    apikey,
 		Transport: httplog.LoggingRoundTripper(logger),
-		Retryer:   NewRetryer(logger, 1, time.Second*3),
+		Retryer:   NewRetryer(time.Second*3, 1, logger),
 	}
 
 	return fdk
