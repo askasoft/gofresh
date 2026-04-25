@@ -98,6 +98,12 @@ type Folder struct {
 	// Cannot use value =1 along with other values
 	ApplicableToWorkspaceIDs []int64 `json:"applicable_to_workspace_ids,omitempty"`
 
+	// undocumented
+	HasSubFolders bool `json:"has_subfolders,omitempty"`
+
+	// undocumented
+	Deleted bool `json:"deleted,omitempty"`
+
 	CreatedAt Time `json:"created_at,omitempty"`
 
 	UpdatedAt Time `json:"updated_at,omitempty"`
