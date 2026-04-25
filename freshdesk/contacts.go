@@ -17,14 +17,22 @@ const (
 	ContactStateVerified   ContactState = "verified"
 )
 
+type ContactType string
+
+const (
+	ContactTypeContact ContactType = "contact"
+	ContactTypeVisitor ContactType = "visitor"
+)
+
 type ListContactsOption struct {
 	Email            string
 	Mobile           string
 	Phone            string
 	UniqueExternalID string
 	CompanyID        int64
-	UpdatedSince     Time
 	State            ContactState // [blocked/deleted/unverified/verified]
+	ContactType      ContactType  // [contact/visitor]
+	UpdatedSince     Time
 	Page             int
 	PerPage          int
 }
@@ -41,6 +49,7 @@ func (lco *ListContactsOption) Values() Values {
 	q.SetString("unique_external_id", lco.UniqueExternalID)
 	q.SetInt64("company_id", lco.CompanyID)
 	q.SetString("state", (string)(lco.State))
+	q.SetString("contact_type", (string)(lco.ContactType))
 	q.SetTime("updated_since", lco.UpdatedSince)
 	q.SetInt("page", lco.Page)
 	q.SetInt("per_page", lco.PerPage)
