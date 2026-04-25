@@ -10,27 +10,17 @@ import (
 // ---------------------------------------------------
 // Requester
 
-const RequesterFieldIncludeUserFieldGroups = "user_field_groups"
+const RequesterFieldsIncludeUserFieldGroups = "user_field_groups"
 
 type ListRequesterGroupsOption = PageOption
 type ListRequesterGroupMembersOption = PageOption
 
 type ListRequestersOption struct {
-	FirstName         string
-	LastName          string
-	Name              string // Concatenation of first_name and last_name with single space in-between fields.
-	JobTitle          string
-	PrimaryEmail      string
 	Email             string
 	MobilePhoneNumber string
 	WorkPhoneNumber   string
+	Query             string
 	WorkspaceID       int64
-	DepartmentID      int64
-	TimeZone          string
-	Language          string
-	LocationID        int64
-	CreatedAt         Date // Date (YYYY-MM-DD) when the requester is created.
-	UpdatedAt         Date // Date (YYYY-MM-DD) when the requester is updated.
 	IncludeAgents     bool
 	Page              int
 	PerPage           int
@@ -42,21 +32,11 @@ func (lro *ListRequestersOption) IsNil() bool {
 
 func (lro *ListRequestersOption) Values() Values {
 	q := Values{}
-	q.SetString("first_name", lro.FirstName)
-	q.SetString("last_name", lro.LastName)
-	q.SetString("name", lro.Name)
-	q.SetString("job_title", lro.JobTitle)
-	q.SetString("primary_email", lro.PrimaryEmail)
 	q.SetString("email", lro.Email)
 	q.SetString("mobile_phone_number", lro.MobilePhoneNumber)
 	q.SetString("work_phone_number", lro.WorkPhoneNumber)
+	q.SetString("query", lro.Query)
 	q.SetInt64("workspace_id", lro.WorkspaceID)
-	q.SetInt64("department_id", lro.DepartmentID)
-	q.SetString("time_zone", lro.TimeZone)
-	q.SetString("language", lro.Language)
-	q.SetInt64("location_id", lro.LocationID)
-	q.SetDate("created_at", lro.CreatedAt)
-	q.SetDate("updated_at", lro.UpdatedAt)
 	q.SetBool("include_agents", lro.IncludeAgents)
 	q.SetInt("page", lro.Page)
 	q.SetInt("per_page", lro.PerPage)
@@ -221,7 +201,26 @@ func (c *Client) GetRequester(ctx context.Context, id int64) (*Requester, error)
 // 11. To filter for fields with no values assigned, use the null keyword.
 // 12. The "~" query operator can be used for "starts with" text searches. "Starts with" search is supported for one or more of the following attributes: first_name, last_name, name, primary_email, mobile_phone_number, work_phone_number. The query format is https://domain.freshservice.com/api/v2/requesters?query="~[attribute_1|attribute_2]:'somestring'". The query needs to be URL encoded. This would return a list of users for whom attribute_1 OR attribute_2 starts with "somestring". Refer to examples 13, 14, and 15.
 // 13. Please note that any update made to requester either in Freshservice application or through API may take a few minutes to get indexed, after which the updated results will be available through API.
-// == Custom Fields Supported	Type
+// ---------------------------------------
+// Supported Requester/Contacts Fields
+// Field	Type	Description
+// first_name	string	First name of the requester.
+// last_name	string	Last name of the requester.
+// name	string	Concatenation of first_name and last_name with single space in-between fields.
+// job_title	string	Title of the requester.
+// primary_email	string	Email address of the requester.
+// work_phone_number	string	Work phone of the requester.
+// mobile_phone_number	string	Mobile phone of the requester.
+// department_id	integer	ID of the department(s) assigned to the requester.
+// reporting_manager_id	integer	ID of the reporting manager.
+// time_zone	string	ID of the department.
+// language	string	Language code(Eg. en, ja-JP).
+// location_id	integer	ID of the location.
+// created_at	date	Date (YYYY-MM-DD) when the requester is created.
+// updated_at	date	Date (YYYY-MM-DD) when the requester is updated.
+// external_id	String	External ID of the requester or Contact.
+// ---------------------------------------
+// Custom Fields Supported	Type
 // Single line text	string
 // Number	integer
 // Dropdown	string

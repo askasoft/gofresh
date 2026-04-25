@@ -3,6 +3,9 @@ package freshservice
 type Requester struct {
 	ID int64 `json:"id,omitempty"`
 
+	// Unique IDs of the Clients associated with the contact, Freshservice for MSPs
+	BelongsToWorkspaceIDs []int64 `json:"belongs_to_workspace_ids,omitempty"`
+
 	// First name of the requester
 	FirstName string `json:"first_name,omitempty"`
 
@@ -81,6 +84,12 @@ type requestersResult struct {
 }
 
 type RequesterCreate struct {
+	// Unique IDs of the Clients associated with the contact, Freshservice for MSPs
+	// * Only one value can be passed. It will throw a validation error "Multiple Values not allowed." when sending more values.
+	// * Value must be > 1
+	// * If no value specified, then default value = 2
+	BelongsToWorkspaceIDs []int64 `json:"belongs_to_workspace_ids,omitempty"`
+
 	// First name of the requester
 	FirstName string `json:"first_name,omitempty"`
 
