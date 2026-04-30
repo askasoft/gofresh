@@ -69,7 +69,7 @@ func (fo *FilterOption) IsNil() bool {
 
 func (fo *FilterOption) Values() Values {
 	q := Values{}
-	q.SetString("query", fo.Query)
+	q.SetString("query", "\""+fo.Query+"\"")
 	q.SetInt("page", fo.Page)
 	return q
 }

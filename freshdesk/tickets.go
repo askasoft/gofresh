@@ -159,6 +159,19 @@ func (c *Client) IterTickets(ctx context.Context, lto *ListTicketsOption, itf fu
 // 9. To scroll through the pages add page parameter to the url. The page number starts with 1 and should not exceed 10
 // 10. To filter for fields with no values assigned, use the null keyword
 // 11. Please note that the updates will take a few minutes to get indexed, after which it will be available through API
+// Supported Ticket Fields:
+// Field	Type	Description
+// agent_id	integer	ID of the agent to whom the ticket has been assigned
+// group_id	integer	ID of the group to which the ticket has been assigned
+// priority	integer	Priority of the ticket
+// status	integer	Status of the ticket
+// tag	string	Tag that has been associated to the tickets
+// type	string	Type of issue that has been associated to the tickets
+// due_by	date	Date (YYYY-MM-DD) when the ticket is due to be resolved
+// fr_due_by	date	Date (YYYY-MM-DD) when the first response is due
+// created_at	date	Ticket creation date (YYYY-MM-DD)
+// updated_at	date	Date (YYYY-MM-DD) when the ticket was last updated
+// closed_at	date	Date (YYYY-MM-DD) when the ticket was closed
 func (c *Client) FilterTickets(ctx context.Context, fto *FilterTicketsOption) ([]*Ticket, int, error) {
 	url := c.Endpoint("/search/tickets")
 	ftr := &FilterTicketsResult{}
