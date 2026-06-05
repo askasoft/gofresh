@@ -12,6 +12,10 @@ import (
 	"github.com/askasoft/pango/ret"
 )
 
+func toString(o any) string {
+	return jsonx.Prettify(o)
+}
+
 type FieldError = fresh.FieldError
 type ResultError = fresh.ResultError
 type Date = fresh.Date
@@ -58,20 +62,12 @@ const (
 	CustomFieldTypeNestedField     = "nested_field"
 )
 
-type FilterOption struct {
-	Query string
-	Page  int
+func AsResultError(err error) (*ResultError, bool) {
+	return fresh.AsResultError(err)
 }
 
-func (fo *FilterOption) IsNil() bool {
-	return fo == nil
-}
-
-func (fo *FilterOption) Values() Values {
-	q := Values{}
-	q.SetString("query", "\""+fo.Query+"\"")
-	q.SetInt("page", fo.Page)
-	return q
+func IsResultError(err error) bool {
+	return fresh.IsResultError(err)
 }
 
 func ParseDate(s string) (Date, error) {
@@ -90,13 +86,25 @@ func NewAttachment(file string, data ...[]byte) *Attachment {
 	return fresh.NewAttachment(file, data...)
 }
 
-func toString(o any) string {
-	return jsonx.Prettify(o)
-}
-
 // default retry on not canceled error or (status = 429 || (status >= 500 && status <= 599))
 func NewRetryer(retryAfter time.Duration, maxRetries int, logger log.Logger) *ret.Retryer {
 	return fresh.NewRetryer(retryAfter, maxRetries, logger)
+}
+
+type FilterOption struct {
+	Query string
+	Page  int
+}
+
+func (fo *FilterOption) IsNil() bool {
+	return fo == nil
+}
+
+func (fo *FilterOption) Values() Values {
+	q := Values{}
+	q.SetString("query", "\""+fo.Query+"\"")
+	q.SetInt("page", fo.Page)
+	return q
 }
 
 type Client fresh.Client
