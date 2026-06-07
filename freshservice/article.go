@@ -126,6 +126,8 @@ type Article struct {
 
 	Approvals []*Approval `json:"approvals,omitempty"`
 
+	Deleted bool `json:"deleted,omitempty"`
+
 	CreatedAt Time `json:"created_at,omitempty"`
 
 	UpdatedAt Time `json:"updated_at,omitempty"`
