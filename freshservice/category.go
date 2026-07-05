@@ -20,6 +20,8 @@ type Category struct {
 	// List of portal IDs where this category is visible
 	VisibleInPortals []int64 `json:"visible_in_portals,omitempty"`
 
+	Deleted bool `json:"deleted,omitempty"`
+
 	CreatedAt Time `json:"created_at,omitempty"`
 
 	UpdatedAt Time `json:"updated_at,omitempty"`

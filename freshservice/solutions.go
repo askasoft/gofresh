@@ -1,16 +1,41 @@
 package freshservice
 
-import "context"
+import (
+	"context"
+
+	"github.com/askasoft/pango/asg"
+)
 
 // ---------------------------------------------------
 // Solutions
 
 // PerPage: 1 ~ 100, default: 30
-type ListCategoriesOption = PageOption
+type ListCategoriesOption struct {
+	WorkspaceID int64
+	Trash       bool
+	Page        int
+	PerPage     int
+}
+
+func (lco *ListCategoriesOption) IsNil() bool {
+	return lco == nil
+}
+
+func (lco *ListCategoriesOption) Values() Values {
+	q := Values{}
+	q.SetInt64("workspace_id", lco.WorkspaceID)
+	if lco.Trash {
+		q.SetString("filter", "trash")
+	}
+	q.SetInt("page", lco.Page)
+	q.SetInt("per_page", lco.PerPage)
+	return q
+}
 
 // PerPage: 1 ~ 100, default: 30
 type ListFoldersOption struct {
-	categoryID int64
+	CategoryID int64
+	Trash      bool
 	Page       int
 	PerPage    int
 }
@@ -21,7 +46,10 @@ func (lfo *ListFoldersOption) IsNil() bool {
 
 func (lfo *ListFoldersOption) Values() Values {
 	q := Values{}
-	q.SetInt64("category_id", lfo.categoryID)
+	q.SetInt64("category_id", lfo.CategoryID)
+	if lfo.Trash {
+		q.SetString("filter", "trash")
+	}
 	q.SetInt("page", lfo.Page)
 	q.SetInt("per_page", lfo.PerPage)
 	return q
@@ -29,7 +57,8 @@ func (lfo *ListFoldersOption) Values() Values {
 
 // PerPage: 1 ~ 100, default: 30
 type ListArticlesOption struct {
-	folderID int64
+	FolderID int64
+	Trash    bool
 	Page     int
 	PerPage  int
 }
@@ -40,7 +69,10 @@ func (lao *ListArticlesOption) IsNil() bool {
 
 func (lao *ListArticlesOption) Values() Values {
 	q := Values{}
-	q.SetInt64("folder_id", lao.folderID)
+	q.SetInt64("folder_id", lao.FolderID)
+	if lao.Trash {
+		q.SetString("filter", "trash")
+	}
 	q.SetInt("page", lao.Page)
 	q.SetInt("per_page", lao.PerPage)
 	return q
@@ -132,6 +164,16 @@ func (c *Client) DeleteCategory(ctx context.Context, cid int64) error {
 	return c.DoDelete(ctx, url)
 }
 
+func (c *Client) RestoreCategory(ctx context.Context, cid int64) error {
+	url := c.Endpoint("/solutions/categories/%d/restore", cid)
+	return c.DoPut(ctx, url, nil, nil)
+}
+
+func (c *Client) PermanentDeleteCategory(ctx context.Context, cid int64) error {
+	url := c.Endpoint("/solutions/categories/%d/delete_forever", cid)
+	return c.DoDelete(ctx, url)
+}
+
 func (c *Client) CreateFolder(ctx context.Context, folder *FolderCreate) (*Folder, error) {
 	url := c.Endpoint("/solutions/folders")
 	result := &folderResult{}
@@ -157,19 +199,14 @@ func (c *Client) GetFolder(ctx context.Context, fid int64) (*Folder, error) {
 	return result.Foler, err
 }
 
-func (c *Client) ListCategoryFolders(ctx context.Context, cid int64, lfo *ListFoldersOption) ([]*Folder, bool, error) {
-	if lfo == nil {
-		lfo = &ListFoldersOption{}
-	}
-	lfo.categoryID = cid
-
+func (c *Client) ListFolders(ctx context.Context, lfo *ListFoldersOption) ([]*Folder, bool, error) {
 	url := c.Endpoint("/solutions/folders")
 	result := &foldersResult{}
 	next, err := c.DoList(ctx, url, lfo, result)
 	return result.Folders, next, err
 }
 
-func (c *Client) IterCategoryFolders(ctx context.Context, cid int64, lfo *ListFoldersOption, iff func(*Folder) error) error {
+func (c *Client) IterFolders(ctx context.Context, lfo *ListFoldersOption, iff func(*Folder) error) error {
 	if lfo == nil {
 		lfo = &ListFoldersOption{}
 	}
@@ -181,7 +218,7 @@ func (c *Client) IterCategoryFolders(ctx context.Context, cid int64, lfo *ListFo
 	}
 
 	for {
-		folders, next, err := c.ListCategoryFolders(ctx, cid, lfo)
+		folders, next, err := c.ListFolders(ctx, lfo)
 		if err != nil {
 			return err
 		}
@@ -200,6 +237,16 @@ func (c *Client) IterCategoryFolders(ctx context.Context, cid int64, lfo *ListFo
 
 func (c *Client) DeleteFolder(ctx context.Context, fid int64) error {
 	url := c.Endpoint("/solutions/folders/%d", fid)
+	return c.DoDelete(ctx, url)
+}
+
+func (c *Client) RestoreFolder(ctx context.Context, fid int64) error {
+	url := c.Endpoint("/solutions/folders/%d/restore", fid)
+	return c.DoPut(ctx, url, nil, nil)
+}
+
+func (c *Client) PermanentDeleteFolder(ctx context.Context, fid int64) error {
+	url := c.Endpoint("/solutions/folders/%d/delete_forever", fid)
 	return c.DoDelete(ctx, url)
 }
 
@@ -237,12 +284,7 @@ func (c *Client) GetArticle(ctx context.Context, aid int64) (*Article, error) {
 	return result.Article, err
 }
 
-func (c *Client) ListFolderArticles(ctx context.Context, fid int64, lao *ListArticlesOption) ([]*ArticleInfo, bool, error) {
-	if lao == nil {
-		lao = &ListArticlesOption{}
-	}
-	lao.folderID = fid
-
+func (c *Client) ListArticles(ctx context.Context, lao *ListArticlesOption) ([]*ArticleInfo, bool, error) {
 	url := c.Endpoint("/solutions/articles")
 	result := &articlesResult{}
 	next, err := c.DoList(ctx, url, lao, result)
@@ -252,7 +294,7 @@ func (c *Client) ListFolderArticles(ctx context.Context, fid int64, lao *ListArt
 	return result.Articles, next, err
 }
 
-func (c *Client) IterFolderArticles(ctx context.Context, fid int64, lao *ListArticlesOption, iaf func(*ArticleInfo) error) error {
+func (c *Client) IterArticles(ctx context.Context, lao *ListArticlesOption, iaf func(*ArticleInfo) error) error {
 	if lao == nil {
 		lao = &ListArticlesOption{}
 	}
@@ -264,7 +306,7 @@ func (c *Client) IterFolderArticles(ctx context.Context, fid int64, lao *ListArt
 	}
 
 	for {
-		articles, next, err := c.ListFolderArticles(ctx, fid, lao)
+		articles, next, err := c.ListArticles(ctx, lao)
 		if err != nil {
 			return err
 		}
@@ -284,6 +326,24 @@ func (c *Client) IterFolderArticles(ctx context.Context, fid int64, lao *ListArt
 func (c *Client) DeleteArticle(ctx context.Context, aid int64) error {
 	url := c.Endpoint("/solutions/articles/%d", aid)
 	return c.DoDelete(ctx, url)
+}
+
+func (c *Client) RestoreArticle(ctx context.Context, aid int64) error {
+	url := c.Endpoint("/solutions/articles/%d/restore", aid)
+	return c.DoPut(ctx, url, nil, nil)
+}
+
+func (c *Client) PermanentDeleteArticle(ctx context.Context, aid int64) error {
+	url := c.Endpoint("/solutions/articles/%d/delete_forever", aid)
+	return c.DoDelete(ctx, url)
+}
+
+// BulkRestoreArticles Restore multiple articles from Trash.
+// A maximum of 30 articles can be restored per request.
+// Restoring articles also restores the required parent folder(s) and category if they're in Trash.
+func (c *Client) BulkRestoreArticles(ctx context.Context, aids ...int64) error {
+	url := c.Endpoint("/solutions/articles/bulk_restore?ids=%s", asg.Join(aids, ","))
+	return c.DoGet(ctx, url, nil)
 }
 
 func (c *Client) SearchArticles(ctx context.Context, sao *SearchArticlesOption) ([]*ArticleInfo, bool, error) {

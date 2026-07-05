@@ -136,7 +136,7 @@ func TestSolutionAPIs(t *testing.T) {
 		t.Fatalf("ERROR: categories=%d", len(cats))
 	}
 
-	fols, _, err := fs.ListCategoryFolders(ctxbg, cat.ID, nil)
+	fols, _, err := fs.ListFolders(ctxbg, &ListFoldersOption{CategoryID: cat.ID})
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
@@ -144,7 +144,7 @@ func TestSolutionAPIs(t *testing.T) {
 		t.Fatalf("ERROR: folders=%d", len(fols))
 	}
 
-	arts, _, err := fs.ListFolderArticles(ctxbg, fol.ID, nil)
+	arts, _, err := fs.ListArticles(ctxbg, &ListArticlesOption{FolderID: fol.ID})
 	if err != nil {
 		t.Fatalf("ERROR: %v", err)
 	}
@@ -152,7 +152,7 @@ func TestSolutionAPIs(t *testing.T) {
 		t.Fatalf("ERROR: articles=%d", len(arts))
 	}
 
-	err = fs.IterFolderArticles(ctxbg, fol.ID, nil, func(ai *ArticleInfo) error {
+	err = fs.IterArticles(ctxbg, &ListArticlesOption{FolderID: fol.ID}, func(ai *ArticleInfo) error {
 		tlog.Debug(ai.String())
 		return nil
 	})
@@ -170,10 +170,10 @@ func TestSolutionIterAllArticles(t *testing.T) {
 	err := fs.IterCategories(ctxbg, nil, func(c *Category) error {
 		tlog.Debugf("Enter Category #%d - %s", c.ID, c.Name)
 
-		return fs.IterCategoryFolders(ctxbg, c.ID, nil, func(f *Folder) error {
+		return fs.IterFolders(ctxbg, &ListFoldersOption{CategoryID: c.ID}, func(f *Folder) error {
 			tlog.Debugf("Enter Folder #%d - %s", f.ID, f)
 
-			return fs.IterFolderArticles(ctxbg, f.ID, nil, func(ai *ArticleInfo) error {
+			return fs.IterArticles(ctxbg, &ListArticlesOption{FolderID: f.ID}, func(ai *ArticleInfo) error {
 				tlog.Debugf("Article #%d - %s", ai.ID, ai)
 				return nil
 			})
@@ -258,7 +258,7 @@ func TestSolutionManyFolders(t *testing.T) {
 	}
 
 	fids := make([]int64, 0, 101)
-	err = fs.IterCategoryFolders(ctxbg, cat.ID, nil, func(f *Folder) error {
+	err = fs.IterFolders(ctxbg, &ListFoldersOption{CategoryID: cat.ID}, func(f *Folder) error {
 		fids = append(fids, f.ID)
 		return nil
 	})
@@ -330,7 +330,7 @@ func TestSolutionManyArticles(t *testing.T) {
 	}
 
 	aids := make([]int64, 0, 101)
-	err = fs.IterFolderArticles(ctxbg, fol.ID, nil, func(a *ArticleInfo) error {
+	err = fs.IterArticles(ctxbg, &ListArticlesOption{FolderID: fol.ID}, func(a *ArticleInfo) error {
 		aids = append(aids, a.ID)
 		return nil
 	})
