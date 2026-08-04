@@ -170,6 +170,11 @@ func (c *Client) GetHelpdeskAttachmentURL(aid int64) string {
 	return GetHelpdeskAttachmentURL(c.Domain, aid)
 }
 
+// GetServiceCatalogItemURL return a permlink for service catalog URL
+func (c *Client) GetServiceCatalogItemURL(displayID int64) string {
+	return GetServiceCatalogItemURL(c.Domain, displayID)
+}
+
 // GetAgentTicketURL return a permlink for agent ticket URL
 func GetAgentTicketURL(domain string, tid int64) string {
 	return fmt.Sprintf("https://%s/a/tickets/%d", domain, tid)
@@ -183,4 +188,9 @@ func GetSolutionArticleURL(domain string, aid int64) string {
 // GetHelpdeskAttachmentURL return a permlink for helpdesk attachment/avator URL
 func GetHelpdeskAttachmentURL(domain string, aid int64) string {
 	return fmt.Sprintf("https://%s/helpdesk/attachments/%d", domain, aid)
+}
+
+// GetServiceCatalogItemURL return a permlink for service catalog URL
+func GetServiceCatalogItemURL(domain string, displayID int64) string {
+	return fmt.Sprintf("https://%s/support/catalog/items/%d", domain, displayID)
 }

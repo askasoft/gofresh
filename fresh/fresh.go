@@ -38,6 +38,10 @@ func NewRetryer(retryAfter time.Duration, maxRetries int, logger log.Logger) *re
 		Logger:     logger,
 		MaxRetries: maxRetries,
 		ShouldRetry: func(err error) time.Duration {
+			var ute *json.UnmarshalTypeError
+			if errors.As(err, &ute) {
+				return 0
+			}
 			if re, ok := AsResultError(err); ok {
 				if re.RetryAfter > 0 {
 					return re.RetryAfter
