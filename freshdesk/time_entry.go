@@ -34,10 +34,10 @@ type TimeEntry struct {
 	StartTime Time `json:"start_time,omitempty"`
 
 	// Ticket creation timestamp
-	CreatedAt Time `json:"created_at,omitempty"`
+	CreatedAt Time `json:"created_at,omitzero"`
 
 	// Ticket updated timestamp
-	UpdatedAt Time `json:"updated_at,omitempty"`
+	UpdatedAt Time `json:"updated_at,omitzero"`
 }
 
 func (te *TimeEntry) String() string {

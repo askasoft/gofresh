@@ -43,9 +43,9 @@ type Group struct {
 	// The time after which an escalation email is sent if a ticket remains unassigned. The accepted values are "30m" for 30 minutes, "1h" for 1 hour, "2h" for 2 hours, "4h" for 4 hours, "8h" for 8 hours, "12h" for 12 hours, "1d" for 1 day, "2d" for 2 days, and "3d" for 3 days
 	UnassignedFor GroupUnassignedFor `json:"unassigned_for,omitempty"`
 
-	CreatedAt Time `json:"created_at,omitempty"`
+	CreatedAt Time `json:"created_at,omitzero"`
 
-	UpdatedAt Time `json:"updated_at,omitempty"`
+	UpdatedAt Time `json:"updated_at,omitzero"`
 }
 
 func (g *Group) String() string {

@@ -86,9 +86,9 @@ type AgentGroup struct {
 	// Set to true if automatic ticket assignment is enabled, and false otherwise.
 	AutoTicketAssign bool `json:"auto_ticket_assign,omitempty"`
 
-	CreatedAt Time `json:"created_at,omitempty"`
+	CreatedAt Time `json:"created_at,omitzero"`
 
-	UpdatedAt Time `json:"updated_at,omitempty"`
+	UpdatedAt Time `json:"updated_at,omitzero"`
 }
 
 func (ag *AgentGroup) String() string {

@@ -59,8 +59,8 @@ type AutomationRule struct {
 	AffectedTicketCount int            `json:"affected_tickets_count,omitempty"`
 	LastUpdatedBy       int64          `json:"last_updated_by,omitempty"`
 	Meta                map[string]any `json:"meta,omitempty"`
-	CreatedAt           Time           `json:"created_at,omitempty"`
-	UpdatedAt           Time           `json:"updated_at,omitempty"`
+	CreatedAt           Time           `json:"created_at,omitzero"`
+	UpdatedAt           Time           `json:"updated_at,omitzero"`
 }
 
 func (ar *AutomationRule) String() string {

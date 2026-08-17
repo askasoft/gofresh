@@ -93,9 +93,9 @@ type Contact struct {
 	// Return by MakeAgent()
 	Agent *Agent `json:"agent,omitempty"`
 
-	CreatedAt Time `json:"created_at,omitempty"`
+	CreatedAt Time `json:"created_at,omitzero"`
 
-	UpdatedAt Time `json:"updated_at,omitempty"`
+	UpdatedAt Time `json:"updated_at,omitzero"`
 }
 
 func (c *Contact) String() string {

@@ -162,9 +162,9 @@ type Agent struct {
 	// True if the agent is active, false if the agent has been deactivated.
 	Active bool `json:"active,omitempty"`
 
-	CreatedAt Time `json:"created_at,omitempty"`
+	CreatedAt Time `json:"created_at,omitzero"`
 
-	UpdatedAt Time `json:"updated_at,omitempty"`
+	UpdatedAt Time `json:"updated_at,omitzero"`
 }
 
 func (a *Agent) String() string {

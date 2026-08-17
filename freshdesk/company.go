@@ -30,9 +30,9 @@ type Company struct {
 	// Key value pair containing the name and value of the custom fields.
 	CustomFields map[string]any `json:"custom_fields,omitempty"`
 
-	CreatedAt Time `json:"created_at,omitempty"`
+	CreatedAt Time `json:"created_at,omitzero"`
 
-	UpdatedAt Time `json:"updated_at,omitempty"`
+	UpdatedAt Time `json:"updated_at,omitzero"`
 }
 
 func (c *Company) String() string {

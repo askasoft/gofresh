@@ -66,9 +66,9 @@ type Requester struct {
 	// Set to true if the user is an agent, false if the user is a requester
 	IsAgent bool `json:"is_agent,omitempty"`
 
-	CreatedAt Time `json:"created_at,omitempty"`
+	CreatedAt Time `json:"created_at,omitzero"`
 
-	UpdatedAt Time `json:"updated_at,omitempty"`
+	UpdatedAt Time `json:"updated_at,omitzero"`
 }
 
 func (r *Requester) String() string {

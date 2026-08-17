@@ -30,9 +30,9 @@ type Workspace struct {
 	// The template from which the workspace was created
 	TemplateName string `json:"template_name,omitempty"`
 
-	CreatedAt Time `json:"created_at,omitempty"`
+	CreatedAt Time `json:"created_at,omitzero"`
 
-	UpdatedAt Time `json:"updated_at,omitempty"`
+	UpdatedAt Time `json:"updated_at,omitzero"`
 }
 
 func (w *Workspace) String() string {

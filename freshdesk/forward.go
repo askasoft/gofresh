@@ -95,8 +95,8 @@ type ForwardResult struct {
 	Attachments       []*Attachment `json:"attachments,omitempty"`
 	CloudFiles        []string      `json:"cloud_files,omitempty"`
 	HasQuotedText     bool          `json:"has_quoted_text,omitempty"`
-	CreatedAt         Time          `json:"created_at,omitempty"`
-	UpdatedAt         Time          `json:"updated_at,omitempty"`
+	CreatedAt         Time          `json:"created_at,omitzero"`
+	UpdatedAt         Time          `json:"updated_at,omitzero"`
 }
 
 func (fr *ForwardResult) String() string {

@@ -122,10 +122,10 @@ type Conversation struct {
 	NotifiedTos []string `json:"notified_to,omitempty"`
 
 	// Conversation creation timestamp
-	CreatedAt Time `json:"created_at,omitempty"`
+	CreatedAt Time `json:"created_at,omitzero"`
 
 	// Conversation updated timestamp
-	UpdatedAt Time `json:"updated_at,omitempty"`
+	UpdatedAt Time `json:"updated_at,omitzero"`
 }
 
 func (c *Conversation) String() string {

@@ -116,9 +116,9 @@ type Article struct {
 	// Attachments associated with the article. The total size of all of a article's attachments cannot exceed 25MB.
 	Attachments []*Attachment `json:"attachments,omitempty"`
 
-	CreatedAt Time `json:"created_at,omitempty"`
+	CreatedAt Time `json:"created_at,omitzero"`
 
-	UpdatedAt Time `json:"updated_at,omitempty"`
+	UpdatedAt Time `json:"updated_at,omitzero"`
 }
 
 func (a *Article) String() string {

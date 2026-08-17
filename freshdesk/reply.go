@@ -28,10 +28,10 @@ type Reply struct {
 	RepliedTos []string `json:"replied_to,omitempty"`
 
 	// Reply creation timestamp
-	CreatedAt Time `json:"created_at,omitempty"`
+	CreatedAt Time `json:"created_at,omitzero"`
 
 	// Reply updated timestamp
-	UpdatedAt Time `json:"updated_at,omitempty"`
+	UpdatedAt Time `json:"updated_at,omitzero"`
 }
 
 func (r *Reply) String() string {

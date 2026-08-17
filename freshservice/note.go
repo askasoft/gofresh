@@ -20,10 +20,10 @@ type Note struct {
 	UserID int64 `json:"user_id,omitempty"`
 
 	// Note creation timestamp
-	CreatedAt *Time `json:"created_at,omitempty"`
+	CreatedAt *Time `json:"created_at,omitzero"`
 
 	// Note updated timestamp
-	UpdatedAt *Time `json:"updated_at,omitempty"`
+	UpdatedAt *Time `json:"updated_at,omitzero"`
 }
 
 func (n *Note) AddAttachment(path string, data ...[]byte) {

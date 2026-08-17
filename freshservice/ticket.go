@@ -363,10 +363,10 @@ type Ticket struct {
 	ResolutionNotesHTML string `json:"resolution_notes_html,omitempty"`
 
 	// Ticket creation timestamp
-	CreatedAt Time `json:"created_at,omitempty"`
+	CreatedAt Time `json:"created_at,omitzero"`
 
 	// Ticket updated timestamp
-	UpdatedAt Time `json:"updated_at,omitempty"`
+	UpdatedAt Time `json:"updated_at,omitzero"`
 }
 
 func (t *Ticket) String() string {
@@ -474,10 +474,10 @@ type TicketCreate struct {
 	ResolutionNotesHTML string `json:"resolution_notes_html,omitempty"`
 
 	// Ticket creation timestamp
-	CreatedAt *Time `json:"created_at,omitempty"`
+	CreatedAt *Time `json:"created_at,omitzero"`
 
 	// Ticket updated timestamp
-	UpdatedAt *Time `json:"updated_at,omitempty"`
+	UpdatedAt *Time `json:"updated_at,omitzero"`
 }
 
 func (t *TicketCreate) String() string {

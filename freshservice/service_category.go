@@ -16,8 +16,8 @@ type ServiceCategory struct {
 	// Number denoting the position of category in service catalog
 	Position int `json:"position,omitempty"`
 
-	CreatedAt Time `json:"created_at,omitempty"`
-	UpdatedAt Time `json:"updated_at,omitempty"`
+	CreatedAt Time `json:"created_at,omitzero"`
+	UpdatedAt Time `json:"updated_at,omitzero"`
 }
 
 func (sc *ServiceCategory) String() string {

@@ -60,9 +60,9 @@ type TicketField struct {
 	// True if the choice update is in progress (Applicable for the fields which has 100+ choices)
 	FieldUpdateInProgress bool `json:"field_update_in_progress,omitempty"`
 
-	CreatedAt Time `json:"created_at,omitempty"`
+	CreatedAt Time `json:"created_at,omitzero"`
 
-	UpdatedAt Time `json:"updated_at,omitempty"`
+	UpdatedAt Time `json:"updated_at,omitzero"`
 }
 
 func (tf *TicketField) String() string {

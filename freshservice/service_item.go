@@ -180,8 +180,8 @@ type ServiceItem struct {
 	IconName string `json:"icon_name,omitempty"`
 	IconURL  string `json:"icon_url,omitempty"`
 
-	CreatedAt Time `json:"created_at,omitempty"`
-	UpdatedAt Time `json:"updated_at,omitempty"`
+	CreatedAt Time `json:"created_at,omitzero"`
+	UpdatedAt Time `json:"updated_at,omitzero"`
 }
 
 func (si *ServiceItem) String() string {
