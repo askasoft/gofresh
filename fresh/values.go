@@ -183,3 +183,9 @@ func (vs Values) SetInt64(name string, value int64) {
 		vs.Set(name, num.Ltoa(value))
 	}
 }
+
+func (vs Values) SetFloat64(name string, value float64) {
+	if value != 0 {
+		vs.Set(name, num.Ftoa(value))
+	}
+}

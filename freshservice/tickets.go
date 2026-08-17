@@ -349,3 +349,37 @@ func (c *Client) IterTicketConversations(ctx context.Context, tid int64, lco *Li
 	}
 	return nil
 }
+
+// ---------------------------------------------------
+// RequestedItems
+
+// GetTicketRequestedItems Get Requested Items of a Service Request
+func (c *Client) GetTicketRequestedItems(ctx context.Context, tid int64) ([]*RequestedItem, error) {
+	url := c.Endpoint("/tickets/%d/requested_items", tid)
+	result := &requestedItemsResult{}
+	err := c.DoGet(ctx, url, result)
+	return result.RequestedItems, err
+}
+
+func (c *Client) UpdateTicketRequestedItem(ctx context.Context, tid, rid int64, item *RequestedItemCreate) (*RequestedItem, error) {
+	url := c.Endpoint("/tickets/%d/requested_items/%d", tid, rid)
+	result := &requestedItemResult{}
+	if err := c.DoPut(ctx, url, item, result); err != nil {
+		return nil, err
+	}
+	return result.RequestedItem, nil
+}
+
+type CatalogItem struct {
+	ItemID       int64          `json:"item_id"`
+	CustomFields map[string]any `json:"custom_fields,omitempty"`
+}
+
+func (c *Client) AddCatelogItemToTicket(ctx context.Context, tid int64, item CatalogItem) (*RequestedItem, error) {
+	url := c.Endpoint("/tickets/%d/requested_items", tid)
+	result := &requestedItemResult{}
+	if err := c.DoPost(ctx, url, item, result); err != nil {
+		return nil, err
+	}
+	return result.RequestedItem, nil
+}
