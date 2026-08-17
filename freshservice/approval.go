@@ -50,15 +50,6 @@ func (a *ApprovalInfo) String() string {
 	return toString(a)
 }
 
-type Delegatee struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
-}
-
-func (d *Delegatee) String() string {
-	return toString(d)
-}
-
 type Approval struct {
 	ID             int64         `json:"id,omitempty"`
 	Parent         string        `json:"parent,omitempty"`
@@ -72,14 +63,20 @@ type Approval struct {
 	MemberID       int64         `json:"member_id,omitempty"`
 	MemberName     string        `json:"member_name,omitempty"`
 	ApprovalStatus *ApprovalInfo `json:"approval_status,omitempty"`
-	Delegatee      *Delegatee    `json:"delegatee,omitempty"`
+	ApprovalGroup  *ApprovalInfo `json:"approval_group,omitempty"`
+	Delegatee      *ApprovalInfo `json:"delegatee,omitempty"`
 	LatestRemark   string        `json:"latest_remark,omitempty"`
+	EmailContent   string        `json:"email_content,omitempty"`
 	CreatedAt      Time          `json:"created_at,omitzero"`
 	UpdatedAt      Time          `json:"updated_at,omitzero"`
 }
 
 func (a *Approval) String() string {
 	return toString(a)
+}
+
+type approvalResult struct {
+	Approval *Approval `json:"approval,omitempty"`
 }
 
 type approvalsResult struct {

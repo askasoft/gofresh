@@ -383,3 +383,73 @@ func (c *Client) AddCatelogItemToTicket(ctx context.Context, tid int64, item Cat
 	}
 	return result.RequestedItem, nil
 }
+
+// ---------------------------------------------------
+// Approvals
+
+func (c *Client) RequestTicketApproval(ctx context.Context, tid int64, approval *Approval) (*Approval, error) {
+	url := c.Endpoint("/tickets/%d/approvals", tid)
+	result := &approvalResult{}
+	if err := c.DoPost(ctx, url, approval, result); err != nil {
+		return nil, err
+	}
+	return result.Approval, nil
+}
+
+func (c *Client) ListTicketApprovals(ctx context.Context, tid int64, lao *ListTicketApprovalsOption) ([]*Approval, bool, error) {
+	url := c.Endpoint("/tickets/%d/approvals", tid)
+	result := &approvalsResult{}
+	next, err := c.DoList(ctx, url, lao, result)
+	return result.Approvals, next, err
+}
+
+type ListTicketApprovalsOption = PageOption
+
+func (c *Client) IterTicketApprovals(ctx context.Context, tid int64, lao *ListTicketApprovalsOption, iaf func(*Approval) error) error {
+	if lao == nil {
+		lao = &ListTicketApprovalsOption{}
+	}
+	if lao.Page < 1 {
+		lao.Page = 1
+	}
+	if lao.PerPage < 1 {
+		lao.PerPage = 100
+	}
+
+	for {
+		approvals, next, err := c.ListTicketApprovals(ctx, tid, lao)
+		if err != nil {
+			return err
+		}
+		for _, a := range approvals {
+			if err = iaf(a); err != nil {
+				return err
+			}
+		}
+		if !next {
+			break
+		}
+		lao.Page++
+	}
+	return nil
+}
+
+func (c *Client) GetTicketApproval(ctx context.Context, tid, aid int64) (*Approval, error) {
+	url := c.Endpoint("/tickets/%d/approvals/%d", tid, aid)
+	result := &approvalResult{}
+	err := c.DoGet(ctx, url, result)
+	return result.Approval, err
+}
+
+func (c *Client) RemindTicketApproval(ctx context.Context, tid, aid int64, approval *Approval) error {
+	url := c.Endpoint("/tickets/%d/approvals/%d", tid, aid)
+	return c.DoPost(ctx, url, nil, nil)
+}
+
+func (c *Client) CancelTicketApproval(ctx context.Context, tid, aid int64) (*Approval, error) {
+	url := c.Endpoint("/tickets/%d/approvals/%d", tid, aid)
+	cancel := &Approval{ApprovalStatus: &ApprovalInfo{ID: int64(ApprovalStatusCanceled)}}
+	result := &approvalResult{}
+	err := c.DoPut(ctx, url, cancel, result)
+	return result.Approval, err
+}
