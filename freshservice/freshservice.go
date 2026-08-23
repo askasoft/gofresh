@@ -160,9 +160,14 @@ func (c *Client) GetAgentTicketURL(tid int64) string {
 	return GetAgentTicketURL(c.Domain, tid)
 }
 
-// GetSolutionArticleURL return a permlink for solution article URL
-func (c *Client) GetSolutionArticleURL(aid int64) string {
-	return GetSolutionArticleURL(c.Domain, aid)
+// GetPortalTicketURL return a permlink for portal ticket URL
+func (c *Client) GetPortalTicketURL(tid int64) string {
+	return GetPortalTicketURL(c.Domain, tid)
+}
+
+// GetPortalArticleURL return a permlink for portal article URL
+func (c *Client) GetPortalArticleURL(aid int64) string {
+	return GetPortalArticleURL(c.Domain, aid)
 }
 
 // GetHelpdeskAttachmentURL return a permlink for helpdesk attachment/avator URL
@@ -180,8 +185,13 @@ func GetAgentTicketURL(domain string, tid int64) string {
 	return fmt.Sprintf("https://%s/a/tickets/%d", domain, tid)
 }
 
-// GetSolutionArticleURL return a permlink for solution article URL
-func GetSolutionArticleURL(domain string, aid int64) string {
+// GetPortalTicketURL return a permlink for portal ticket URL
+func GetPortalTicketURL(domain string, tid int64) string {
+	return fmt.Sprintf("https://%s/support/tickets/%d", domain, tid)
+}
+
+// GetPortalArticleURL return a permlink for portal article URL
+func GetPortalArticleURL(domain string, aid int64) string {
 	return fmt.Sprintf("https://%s/support/solutions/articles/%d", domain, aid)
 }
 

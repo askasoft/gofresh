@@ -107,24 +107,6 @@ func NewRetryer(retryAfter time.Duration, maxRetries int, logger log.Logger) *re
 	return fresh.NewRetryer(retryAfter, maxRetries, logger)
 }
 
-// GetAgentTicketURL return a permlink for agent ticket URL
-func GetAgentTicketURL(domain string, tid int64) string {
-	return fmt.Sprintf("https://%s/a/tickets/%d", domain, tid)
-}
-
-// GetSolutionArticleURL return a permlink for solution article URL
-func GetSolutionArticleURL(domain string, aid int64, languages ...string) string {
-	if len(languages) > 0 {
-		return fmt.Sprintf("https://%s/%s/support/solutions/articles/%d", domain, languages[0], aid)
-	}
-	return fmt.Sprintf("https://%s/support/solutions/articles/%d", domain, aid)
-}
-
-// GetHelpdeskAttachmentURL return a permlink for helpdesk attachment/avator URL
-func GetHelpdeskAttachmentURL(domain string, aid int64) string {
-	return fmt.Sprintf("https://%s/helpdesk/attachments/%d", domain, aid)
-}
-
 type Client fresh.Client
 
 func (c *Client) Endpoint(format string, a ...any) string {
@@ -203,12 +185,40 @@ func (c *Client) GetAgentTicketURL(tid int64) string {
 	return GetAgentTicketURL(c.Domain, tid)
 }
 
-// GetSolutionArticleURL return a permlink for solution article URL
-func (c *Client) GetSolutionArticleURL(aid int64, languages ...string) string {
-	return GetSolutionArticleURL(c.Domain, aid, languages...)
+// GetPortalTicketURL return a permlink for portal ticket URL
+func (c *Client) GetPortalTicketURL(tid int64) string {
+	return GetPortalTicketURL(c.Domain, tid)
+}
+
+// GetPortalArticleURL return a permlink for portal article URL
+func (c *Client) GetPortalArticleURL(aid int64, languages ...string) string {
+	return GetPortalArticleURL(c.Domain, aid, languages...)
 }
 
 // GetHelpdeskAttachmentURL return a permlink for helpdesk attachment/avator URL
 func (c *Client) GetHelpdeskAttachmentURL(aid int64) string {
 	return GetHelpdeskAttachmentURL(c.Domain, aid)
+}
+
+// GetAgentTicketURL return a permlink for agent ticket URL
+func GetAgentTicketURL(domain string, tid int64) string {
+	return fmt.Sprintf("https://%s/a/tickets/%d", domain, tid)
+}
+
+// GetPortalTicketURL return a permlink for portal ticket URL
+func GetPortalTicketURL(domain string, tid int64) string {
+	return fmt.Sprintf("https://%s/support/tickets/%d", domain, tid)
+}
+
+// GetPortalArticleURL return a permlink for portal article URL
+func GetPortalArticleURL(domain string, aid int64, languages ...string) string {
+	if len(languages) > 0 {
+		return fmt.Sprintf("https://%s/%s/support/solutions/articles/%d", domain, languages[0], aid)
+	}
+	return fmt.Sprintf("https://%s/support/solutions/articles/%d", domain, aid)
+}
+
+// GetHelpdeskAttachmentURL return a permlink for helpdesk attachment/avator URL
+func GetHelpdeskAttachmentURL(domain string, aid int64) string {
+	return fmt.Sprintf("https://%s/helpdesk/attachments/%d", domain, aid)
 }
