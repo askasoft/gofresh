@@ -93,7 +93,12 @@ func (c *Client) call(req *http.Request) (*http.Response, error) {
 		Transport: c.Transport,
 		Timeout:   c.Timeout,
 	}
-	return hc.Do(req)
+
+	res, err := hc.Do(req)
+	if err != nil {
+		err = fmt.Errorf("(%s %s): %w", req.Method, req.URL.String(), err)
+	}
+	return res, err
 }
 
 func (c *Client) authAndCall(req *http.Request) (*http.Response, error) {
@@ -117,7 +122,9 @@ func (c *Client) doCall(req *http.Request, result any) (*http.Response, error) {
 	decoder := json.NewDecoder(res.Body)
 	if res.StatusCode == http.StatusOK || res.StatusCode == http.StatusCreated || res.StatusCode == http.StatusNoContent {
 		if result != nil {
-			return res, decoder.Decode(result)
+			if err := decoder.Decode(result); err != nil {
+				return res, fmt.Errorf("(%s %s): %w", req.Method, req.URL.String(), err)
+			}
 		}
 		return res, nil
 	}
